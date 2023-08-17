@@ -116,6 +116,7 @@ public class HRLog
 
 public class LogDataManager : MonoBehaviour
 {
+    public string saveFile1, saveFile2;
     private string attachedToBottom, attachedToTop, attachedToMiddle;
 
     List<string> armLogs = new List<string>();
@@ -138,115 +139,122 @@ public class LogDataManager : MonoBehaviour
     Dictionary<int, ArmCollisionLog> armCollisionLogs = new Dictionary<int, ArmCollisionLog>();
     Dictionary<int, FightCollisionLog> fightCollisionLogs = new Dictionary<int, FightCollisionLog>();
 
-    private int frame = 0;
-    private float nextUpdate = 0f;
     private bool logsReady;
 
     private void Start()
     {
+        ES3.CacheFile(saveFile1);
+        ES3.CacheFile(saveFile2);
     }
 
-    public void LoadReplayCoroutine(string saveFile)
+    public async void LoadReplay(int saveFile)
     {
         logsReady = false;
 
-            ES3.CacheFile(saveFile);
-        
-        
-        var settings = new ES3Settings(saveFile, ES3.Location.Cache);
+        await Task.Run(() =>
+        {         
+            var recording = new ES3Settings();
 
-        int frame = 0;
-        foreach (string key in ES3.GetKeys(settings))
-        {
-            if (key.Contains("TransformLog"))
+            if (saveFile == 1)
             {
-                TransformLog transformLog = ES3.Load<TransformLog>(key, settings);
-                if (transformLog.TransformType == 1)
-                {
-                    headLogs.Add(transformLog);
-                }
-                else if (transformLog.TransformType == 2)
-                {
-                    leftHandLogs.Add(transformLog);
-                }
-                else
-                {
-                    rightHandLogs.Add(transformLog);
-                }
-            }
-            else if (key.Contains("ArmLog"))
-            {
-                ArmLog armLog = ES3.Load<ArmLog>(key, settings);
-                if (armLog.armBase == 1)
-                {
-                    bottomArmLogs.Add(armLog);
-                    if (!armLog.armType.Equals(attachedToBottom))
-                    {
-                        bottomArmHighlights.Add(frame);
-                        attachedToBottom = armLog.armType;
-                    }
-                }
-                else if (armLog.armBase == 2)
-                {
-                    middleArmLogs.Add(armLog);
-                    if (!armLog.armType.Equals(attachedToMiddle))
-                    {
-                        middleArmHighlights.Add(frame);
-                        attachedToMiddle = armLog.armType;
-                    }
-                }
-                else
-                {
-                    topArmLogs.Add(armLog);
-                    if (!armLog.armType.Equals(attachedToTop))
-                    {
-                        topArmHighlights.Add(frame);
-                        attachedToTop = armLog.armType;
-                    }
-                    frame++;
-                }
-            }
-            else if (key.Contains("ArmCollision"))
-            {
-                // TODO: FCLogs nach top, mid, bot aufteilen; Kann sonst Probleme mit Keys geben
-                ArmCollisionLog armCollisionLog = ES3.Load<ArmCollisionLog>(key, settings);
-                if (armCollisionLogs.ContainsKey(frame))
-                {
-                    armCollisionLogs.Remove(frame);
-                }
-                armCollisionLogs.Add(frame, armCollisionLog);
-            }
-            else if (key.Contains("FightCollision"))
-            {
-                // TODO: FCLogs nach top, mid, bot aufteilen; Kann sonst Probleme mit Keys geben
-                FightCollisionLog fightCollisionLog = ES3.Load<FightCollisionLog>(key, settings);
-                if (fightCollisionLogs.ContainsKey(frame))
-                {
-                    fightCollisionLogs.Remove(frame);
-                }
-                fightCollisionLogs.Add(frame, fightCollisionLog);
-            }
-            else if (key.Contains("HRLog"))
-            {
-                HRLog hrLog = ES3.Load<HRLog>(key, settings);
-                if(HRLogs.ContainsKey(frame))
-                {
-                    HRLogs.Remove(frame);
-                }
-                HRLogs.Add(frame, hrLog);
+                recording = new ES3Settings(saveFile1, ES3.Location.Cache);
             }
             else
             {
-                continue;
+                recording = new ES3Settings(saveFile2, ES3.Location.Cache);
             }
-        }
+
+            int frame = 0;
+            foreach (string key in ES3.GetKeys(recording))
+            {
+                if (key.Contains("TransformLog"))
+                {
+                    TransformLog transformLog = ES3.Load<TransformLog>(key, recording);
+                    if (transformLog.TransformType == 1)
+                    {
+                        headLogs.Add(transformLog);
+                    }
+                    else if (transformLog.TransformType == 2)
+                    {
+                        leftHandLogs.Add(transformLog);
+                    }
+                    else
+                    {
+                        rightHandLogs.Add(transformLog);
+                    }
+                }
+                else if (key.Contains("ArmLog"))
+                {
+                    ArmLog armLog = ES3.Load<ArmLog>(key, recording);
+                    if (armLog.armBase == 1)
+                    {
+                        bottomArmLogs.Add(armLog);
+                        if (!armLog.armType.Equals(attachedToBottom))
+                        {
+                            bottomArmHighlights.Add(frame);
+                            attachedToBottom = armLog.armType;
+                        }
+                    }
+                    else if (armLog.armBase == 2)
+                    {
+                        middleArmLogs.Add(armLog);
+                        if (!armLog.armType.Equals(attachedToMiddle))
+                        {
+                            middleArmHighlights.Add(frame);
+                            attachedToMiddle = armLog.armType;
+                        }
+                    }
+                    else
+                    {
+                        topArmLogs.Add(armLog);
+                        if (!armLog.armType.Equals(attachedToTop))
+                        {
+                            topArmHighlights.Add(frame);
+                            attachedToTop = armLog.armType;
+                        }
+                        frame++;
+                    }
+                }
+                else if (key.Contains("ArmCollision"))
+                {
+                    // TODO: FCLogs nach top, mid, bot aufteilen; Kann sonst Probleme mit Keys geben
+                    ArmCollisionLog armCollisionLog = ES3.Load<ArmCollisionLog>(key, recording);
+                    if (armCollisionLogs.ContainsKey(frame))
+                    {
+                        armCollisionLogs.Remove(frame);
+                    }
+                    armCollisionLogs.Add(frame, armCollisionLog);
+                }
+                else if (key.Contains("FightCollision"))
+                {
+                    // TODO: FCLogs nach top, mid, bot aufteilen; Kann sonst Probleme mit Keys geben
+                    FightCollisionLog fightCollisionLog = ES3.Load<FightCollisionLog>(key, recording);
+                    if (fightCollisionLogs.ContainsKey(frame))
+                    {
+                        fightCollisionLogs.Remove(frame);
+                    }
+                    fightCollisionLogs.Add(frame, fightCollisionLog);
+                }
+                else if (key.Contains("HRLog"))
+                {
+                    HRLog hrLog = ES3.Load<HRLog>(key, recording);
+                    if (HRLogs.ContainsKey(frame))
+                    {
+                        HRLogs.Remove(frame);
+                    }
+                    HRLogs.Add(frame, hrLog);
+                }
+                else
+                {
+                    continue;
+                }
+            }
+        });
 
         attachedToBottom = "";
         attachedToTop = "";
         attachedToMiddle = "";
 
-        nextUpdate = Time.time;
-        Debug.Log("Data Loaded");
         logsReady = true;
     }
 

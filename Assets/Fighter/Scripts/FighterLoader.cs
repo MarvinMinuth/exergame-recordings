@@ -23,7 +23,7 @@ public class FighterLoader : MonoBehaviour
         
     }
 
-    public void LoadReplay(string filename, GameObject fighter)
+    public void LoadReplay(int saveFile, GameObject fighter)
     {
         if (replayManager.IsLoading()) return;
         if (loadedFighter != null)
@@ -31,9 +31,11 @@ public class FighterLoader : MonoBehaviour
             loadedFighter.SetActive(true);
         }
 
+        Material fighterMaterial = fighter.GetComponent<FighterCoordinator>().fighterMaterial;
+
         loadedFighter = fighter;
         loadedFighter.SetActive(false);
 
-        replayManager.Load(filename);
+        replayManager.Load(saveFile, fighterMaterial);
     }
 }

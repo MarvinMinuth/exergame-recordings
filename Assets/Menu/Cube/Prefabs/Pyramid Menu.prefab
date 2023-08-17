@@ -143,7 +143,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 9944b0d691f0bfc4285d0ca3e30f9530, type: 2}
+  - {fileID: 2100000, guid: d9389cf5529b1994787361be664111a4, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -618,12 +618,12 @@ PrefabInstance:
     - target: {fileID: 4769098102207602864, guid: 2ed984a58a974166bf92c82a74380454,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.251
+      value: 0.208
       objectReference: {fileID: 0}
     - target: {fileID: 4769098102207602864, guid: 2ed984a58a974166bf92c82a74380454,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -13
+      value: -12.659
       objectReference: {fileID: 0}
     - target: {fileID: 4769098102207602864, guid: 2ed984a58a974166bf92c82a74380454,
         type: 3}
@@ -690,6 +690,16 @@ PrefabInstance:
       propertyPath: m_UseDynamicAttach
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 4769098102207602865, guid: 2ed984a58a974166bf92c82a74380454,
+        type: 3}
+      propertyPath: m_Colliders.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4769098102207602865, guid: 2ed984a58a974166bf92c82a74380454,
+        type: 3}
+      propertyPath: m_Colliders.Array.data[0]
+      value: 
+      objectReference: {fileID: 592012318413063870}
     - target: {fileID: 4769098102207602865, guid: 2ed984a58a974166bf92c82a74380454,
         type: 3}
       propertyPath: m_Activated.m_PersistentCalls.m_Calls.Array.size
@@ -989,6 +999,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2ed984a58a974166bf92c82a74380454, type: 3}
+--- !u!64 &592012318413063870 stripped
+MeshCollider:
+  m_CorrespondingSourceObject: {fileID: 8849130009450615980, guid: 2ed984a58a974166bf92c82a74380454,
+    type: 3}
+  m_PrefabInstance: {fileID: 8284702238927426066}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &3519019666782941857 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 4769098102207602867, guid: 2ed984a58a974166bf92c82a74380454,

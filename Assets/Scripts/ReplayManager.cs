@@ -7,10 +7,10 @@ public class ReplayManager : MonoBehaviour
 {
     [SerializeField]
     public GameObject loadManager;
-    public GameObject rigManager;
+    public GameObject fighter;
     public GameObject fightDummy;
-    public Canvas timeSliderCanvas;
-    public GameObject timeSliderPrefab;
+    public Canvas menuCanvas;
+    public GameObject timelinePanelPrefab;
     
 
     [SerializeField]
@@ -19,13 +19,13 @@ public class ReplayManager : MonoBehaviour
     GameObject timeSlider;
 
     private LogDataManager logDataManager;
-    private RigCoordinator rigCoordinator;
+    private FighterCoordinator fighterCoordinator;
     private ArmsCoordinator armsCoordinator;
 
     private GameObject head, leftHand, rightHand;
     private GameObject bottomArmBase, middleArmBase, topArmBase;
 
-    private int frame = 0;
+    private int frame = 6;
     private int totalFrames = 0;
     private float nextUpdate = 0f;
 
@@ -46,7 +46,6 @@ public class ReplayManager : MonoBehaviour
 
     private bool areLogsReady = false;
     private bool isRunning = false;
-    private bool isPaused = false;
     private bool isLoading = false;
     private bool fileLoaded = false;
 
@@ -56,7 +55,7 @@ public class ReplayManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        rigCoordinator = rigManager.GetComponent<RigCoordinator>();
+        fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
         logDataManager = loadManager.GetComponent<LogDataManager>();
         armsCoordinator = fightDummy.GetComponent<ArmsCoordinator>();
 
@@ -64,21 +63,25 @@ public class ReplayManager : MonoBehaviour
         middleArmBase = armsCoordinator.middleArmBase;
         topArmBase = armsCoordinator.topArmBase;
 
-        head = rigCoordinator.head;
-        leftHand = rigCoordinator.leftHand;
-        rightHand = rigCoordinator.rightHand;
+        head = fighterCoordinator.GetHead();
+        leftHand = fighterCoordinator.GetLeftHand();
+        rightHand = fighterCoordinator.GetRightHand();
     }
 
-    public void Load(string saveFile)
+    public void Load(int saveFile, Material material)
     {
         if (isLoading) return;
+
+        fighter.SetActive(true);
+
         if (fileLoaded)
         {
             Unload();
         }
 
         isLoading = true;
-        logDataManager.LoadReplayCoroutine(saveFile);
+        fighterCoordinator.ChangeMaterial(material);
+        logDataManager.LoadReplay(saveFile);
 
         StartCoroutine(WaitForLogs());
 
@@ -91,7 +94,6 @@ public class ReplayManager : MonoBehaviour
         isLoading = false;
 
         totalFrames = headTransformLogs.Count - 1;
-        LoadFrame(0);
         InstantiateTimeSlider();
 
         fileLoaded = true;
@@ -151,7 +153,7 @@ public class ReplayManager : MonoBehaviour
     public void Stop()
     {
         isRunning = false;
-        frame = 0;
+        frame = 6;
         LoadFrame(frame);
         playDirection = 1;
         playSpeed = 1;
@@ -234,7 +236,7 @@ public class ReplayManager : MonoBehaviour
 
     public void InstantiateTimeSlider()
     {
-        timeSlider = Instantiate(timeSliderPrefab, timeSliderCanvas.transform);
+        timeSlider = Instantiate(timelinePanelPrefab, menuCanvas.transform);
     }
 
     public void LoadNextFrame()
@@ -249,8 +251,11 @@ public class ReplayManager : MonoBehaviour
     }
 
     public void Unload()
-    {
+    {     
+        fighterCoordinator.ChangeToIdleMaterial();
+        fighter.SetActive(false);
         Stop();
+        armsCoordinator.ResetArms();
         fileLoaded = false;
         Destroy(timeSlider);
         headTransformLogs.Clear();
@@ -265,8 +270,6 @@ public class ReplayManager : MonoBehaviour
         armCollisionLogDic = null;
         fightCollisionLogDic = null;
         hrLogDic = null;
-
-        armsCoordinator.ResetArms();
     }
 
     // Gib den HRLog zurück, der dem gegebenen Frame am nächsten kommt
@@ -327,12 +330,12 @@ public class ReplayManager : MonoBehaviour
 
     void SetBodyPosition(GameObject gameObject,  TransformLog transformLog)
     {
-        rigCoordinator.SetPosition(gameObject, transformLog.Position);
+        fighterCoordinator.SetPosition(gameObject, transformLog.Position);
     }
 
     void SetBodyRotation(GameObject gameObject, TransformLog transformLog)
     {
-        rigCoordinator.SetRotation(gameObject, Quaternion.Euler(transformLog.Rotation));
+        fighterCoordinator.SetRotation(gameObject, Quaternion.Euler(transformLog.Rotation));
     }
 
     public bool IsRunning()

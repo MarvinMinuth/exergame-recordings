@@ -28,7 +28,6 @@ public class Timeline : MonoBehaviour
     private List<int> shownHighlights = new List<int>();
 
     private bool isDragged = false;
-    private bool isRunning = true;
     private bool wasRunning;
 
     private int frame;
@@ -56,8 +55,8 @@ public class Timeline : MonoBehaviour
         }
 
         SetButtonActive(playButton);
-        frame = 0;
-        replayManager.LoadFrame(0);
+        frame = 6;
+        replayManager.LoadFrame(6);
     }
 
     public void SetButtonActive(Button button)
@@ -167,6 +166,7 @@ public class Timeline : MonoBehaviour
         {
             // Setze den Replay-Zeitpunkt auf den nächsten Highlight-Wert
             frame = closestHighlight;
+            if(frame < 6) { frame = 6; }
             replayManager.SetReplayTime(frame);
             replayManager.LoadFrame(frame);
         }
@@ -222,7 +222,7 @@ public class Timeline : MonoBehaviour
     public void SetMark(int frame, Color color)
     {
         shownHighlights.Add(frame);
-        if (frame == 0) { return; }
+        if (frame < 6) { return; }
         Vector2 markerPosition = GetMarkerPosition(frame);
         GameObject mark = Instantiate(marker, transform, false);
         mark.GetComponent<RectTransform>().localPosition = markerPosition;

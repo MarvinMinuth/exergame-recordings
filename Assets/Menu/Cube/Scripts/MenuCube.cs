@@ -5,9 +5,7 @@ using UnityEngine;
 public class MenuCube : MonoBehaviour
 {
     public GameObject target;
-    public float distanceToPlace = 1.0f;  // Wie weit vor dem Controller das Objekt schweben soll
-
-    private bool isFloating = false;
+    public float distanceToPlace = 1.0f;
 
     // Start is called before the first frame update
     void Start()
