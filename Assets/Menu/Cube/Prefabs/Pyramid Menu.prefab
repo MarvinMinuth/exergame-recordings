@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 6407249184143289316}
   - component: {fileID: 6407249184143289319}
   m_Layer: 0
-  m_Name: Panel
+  m_Name: Menu Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -91,6 +91,7 @@ GameObject:
   - component: {fileID: 6407249184628494249}
   - component: {fileID: 6407249184628494248}
   - component: {fileID: 1807374810}
+  - component: {fileID: 8246472601281203165}
   m_Layer: 0
   m_Name: Menu Screen
   m_TagString: Untagged
@@ -176,8 +177,8 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
+  m_Size: {x: 0.06840476, y: 1, z: 0}
+  m_Center: {x: 0.46579647, y: 5.3121434e-11, z: 0.49840173}
 --- !u!54 &6407249184628494249
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -350,6 +351,19 @@ MonoBehaviour:
   m_MinimumScaleRatio: 0.25
   m_MaximumScaleRatio: 2
   m_ScaleMultiplier: 0.25
+--- !u!65 &8246472601281203165
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6407249184628494250}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 0.07171695, y: 1, z: 1.0000231}
+  m_Center: {x: -0.46623665, y: 0, z: 0}
 --- !u!1 &6407249185711801813
 GameObject:
   m_ObjectHideFlags: 0
@@ -618,7 +632,7 @@ PrefabInstance:
     - target: {fileID: 4769098102207602864, guid: 2ed984a58a974166bf92c82a74380454,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.208
+      value: 0.25
       objectReference: {fileID: 0}
     - target: {fileID: 4769098102207602864, guid: 2ed984a58a974166bf92c82a74380454,
         type: 3}
@@ -1011,6 +1025,23 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8284702238927426066}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &908226909993456743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3519019666782941857}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 71f68d712a775404891944c67b64456b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timelinePrefab: {fileID: 5655661324407173003, guid: 257a9ed47948fa9498147295a5bbc06f,
+    type: 3}
+  fighterButtonsPrefab: {fileID: 5655661324407173003, guid: 386ed238241ab1d498bd417ae872e28f,
+    type: 3}
+  menuPanel: {fileID: 6407249184143289321}
 --- !u!114 &6407249185562883083
 MonoBehaviour:
   m_ObjectHideFlags: 0

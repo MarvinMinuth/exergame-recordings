@@ -517,6 +517,12 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7a48ece4890cab64c929eaaaa78bf11b, type: 3}
+--- !u!1 &974127912 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3519019666782941857, guid: e4ffd36f71c42a043a80636b0121b260,
+    type: 3}
+  m_PrefabInstance: {fileID: 8284702239229910898}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1208430463
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -970,10 +976,7 @@ MonoBehaviour:
   loadManager: {fileID: 1851324985}
   fighter: {fileID: 367870199}
   fightDummy: {fileID: 1711222429}
-  menuCanvas: {fileID: 6407249185711801809}
-  timelinePanelPrefab: {fileID: 5655661324407173003, guid: 257a9ed47948fa9498147295a5bbc06f,
-    type: 3}
-  saveFile: C:/Users/marvi/Visualize this/Assets/Logs/ActivityLog_2023-07-22-T17-01-33.json
+  menu: {fileID: 974127912}
 --- !u!1 &1711222429 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1703718894061185343, guid: 7a48ece4890cab64c929eaaaa78bf11b,
@@ -1197,6 +1200,11 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 498542178627693480, guid: 7eef32d57665ba441b027fd2cd941e23,
+        type: 3}
+      propertyPath: m_TagString
+      value: Fighter
+      objectReference: {fileID: 0}
     - target: {fileID: 498542178627693482, guid: 7eef32d57665ba441b027fd2cd941e23,
         type: 3}
       propertyPath: saveFileNumber
@@ -1275,12 +1283,6 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 2088306995}
   m_PrefabAsset: {fileID: 0}
---- !u!223 &6407249185711801809 stripped
-Canvas:
-  m_CorrespondingSourceObject: {fileID: 6407249185711801809, guid: e4ffd36f71c42a043a80636b0121b260,
-    type: 3}
-  m_PrefabInstance: {fileID: 8284702239229910898}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8284702239229910898
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1288,10 +1290,20 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 908226909993456743, guid: e4ffd36f71c42a043a80636b0121b260,
+        type: 3}
+      propertyPath: transparentFighterMaterial
+      value: 
+      objectReference: {fileID: 2100000, guid: c6c3b040bb0677d47a74e1654b10d440, type: 2}
     - target: {fileID: 3519019666782941857, guid: e4ffd36f71c42a043a80636b0121b260,
         type: 3}
       propertyPath: m_Name
       value: Pyramid Menu
+      objectReference: {fileID: 0}
+    - target: {fileID: 3519019666782941857, guid: e4ffd36f71c42a043a80636b0121b260,
+        type: 3}
+      propertyPath: m_TagString
+      value: Menu
       objectReference: {fileID: 0}
     - target: {fileID: 3519019666782941858, guid: e4ffd36f71c42a043a80636b0121b260,
         type: 3}

@@ -9,14 +9,10 @@ public class ReplayManager : MonoBehaviour
     public GameObject loadManager;
     public GameObject fighter;
     public GameObject fightDummy;
-    public Canvas menuCanvas;
-    public GameObject timelinePanelPrefab;
-    
-
-    [SerializeField]
-    public string saveFile;
+    public GameObject menu;
 
     GameObject timeSlider;
+    private MenuCoordinator menuCoordinator;
 
     private LogDataManager logDataManager;
     private FighterCoordinator fighterCoordinator;
@@ -55,37 +51,36 @@ public class ReplayManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
         logDataManager = loadManager.GetComponent<LogDataManager>();
         armsCoordinator = fightDummy.GetComponent<ArmsCoordinator>();
 
         bottomArmBase = armsCoordinator.bottomArmBase;
         middleArmBase = armsCoordinator.middleArmBase;
-        topArmBase = armsCoordinator.topArmBase;
+        topArmBase = armsCoordinator.topArmBase; 
 
-        head = fighterCoordinator.GetHead();
-        leftHand = fighterCoordinator.GetLeftHand();
-        rightHand = fighterCoordinator.GetRightHand();
+        menuCoordinator = menu.GetComponent<MenuCoordinator>();
     }
 
     public void Load(int saveFile, Material material)
     {
         if (isLoading) return;
-
-        fighter.SetActive(true);
-
         if (fileLoaded)
         {
             Unload();
         }
 
+        Debug.Log(fighter.name);
+        fighter.SetActive(true);
+        fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
+        head = fighterCoordinator.GetHead();
+        leftHand = fighterCoordinator.GetLeftHand();
+        rightHand = fighterCoordinator.GetRightHand();
+
         isLoading = true;
         fighterCoordinator.ChangeMaterial(material);
         logDataManager.LoadReplay(saveFile);
 
-        StartCoroutine(WaitForLogs());
-
-        
+        StartCoroutine(WaitForLogs());       
     }
 
     void OnLogsLoaded()
@@ -94,7 +89,7 @@ public class ReplayManager : MonoBehaviour
         isLoading = false;
 
         totalFrames = headTransformLogs.Count - 1;
-        InstantiateTimeSlider();
+        SetupMenu();
 
         fileLoaded = true;
         areLogsReady = true;
@@ -234,9 +229,10 @@ public class ReplayManager : MonoBehaviour
         SetDummyTargetRotation(topArmBase.gameObject, topArmLogs[frame]);
     }
 
-    public void InstantiateTimeSlider()
+    public void SetupMenu()
     {
-        timeSlider = Instantiate(timelinePanelPrefab, menuCanvas.transform);
+        menuCoordinator.SetupMenu();
+        timeSlider = menuCoordinator.GetTimeline();
     }
 
     public void LoadNextFrame()
@@ -257,7 +253,13 @@ public class ReplayManager : MonoBehaviour
         Stop();
         armsCoordinator.ResetArms();
         fileLoaded = false;
-        Destroy(timeSlider);
+        menuCoordinator.DestroyMenu();
+
+        ClearLogs();    
+    }
+
+    void ClearLogs()
+    {
         headTransformLogs.Clear();
         leftHandTransformLogs.Clear();
         rightHandTransformLogs.Clear();

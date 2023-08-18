@@ -20,20 +20,22 @@ public class FighterCoordinator : MonoBehaviour
     FighterLoader loader;
     void Start()
     {
-        head = transform.Find("Head").gameObject;
-        leftHand = transform.Find("Left Hand").gameObject;
-        rightHand = transform.Find("Right Hand").gameObject;
-        loader = transform.GetComponentInParent<FighterLoader>();     
+        
     }
 
     private void OnEnable()
     {
+        head = transform.Find("Head").gameObject;
+        leftHand = transform.Find("Left Hand").gameObject;
+        rightHand = transform.Find("Right Hand").gameObject;
+        loader = transform.GetComponentInParent<FighterLoader>();
         hmdMesh = transform.Find("Head").Find("HMD").GetComponent<MeshRenderer>();
         renderers = transform.GetComponentsInChildren<MeshRenderer>();
         ChangeMaterial(fighterMaterial);
     }
     public void SetPosition(GameObject bodyPart, Vector3 position)
     {
+        if (bodyPart == null) { return; }
         bodyPart.transform.position = position;
     }
 
@@ -58,6 +60,7 @@ public class FighterCoordinator : MonoBehaviour
 
     public void ChangeMaterial(Material material)
     {
+        fighterMaterial = material;
         foreach (MeshRenderer renderer in renderers)
         {
             renderer.material = material;
