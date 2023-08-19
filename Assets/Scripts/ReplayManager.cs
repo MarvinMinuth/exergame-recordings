@@ -353,5 +353,7 @@ public class ReplayManager : MonoBehaviour
 
     public Dictionary<int, FightCollisionLog> GetFightCollisionDic() { return fightCollisionLogDic; }
 
+    public Dictionary<int, HRLog> GetHRLog() { return hrLogDic; }
+
     public bool IsLoading() { return isLoading; }
 }

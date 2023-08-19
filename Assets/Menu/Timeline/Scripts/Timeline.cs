@@ -57,6 +57,7 @@ public class Timeline : MonoBehaviour
         SetButtonActive(playButton);
         frame = 6;
         replayManager.LoadFrame(6);
+        SetupHeartrateGraph();
     }
 
     public void SetButtonActive(Button button)
@@ -227,6 +228,27 @@ public class Timeline : MonoBehaviour
         GameObject mark = Instantiate(marker, transform, false);
         mark.GetComponent<RectTransform>().localPosition = markerPosition;
         mark.GetComponent<Image>().color = color;
+    }
+
+    public void SetupHeartrateGraph()
+    {
+        LineRenderer lineRenderer = transform.Find("Slider").Find("Background").GetComponent<LineRenderer>();
+        lineRenderer.positionCount = replayManager.GetHRLog().Count+1;
+        int point = 0;
+        Vector3 position = new Vector3(-400, -20, -1);
+        lineRenderer.SetPosition(point, position);
+
+        point++;
+
+        float normalizedXValue = 800 / (timeline.maxValue - timeline.minValue);
+
+        foreach(KeyValuePair<int, HRLog> log in replayManager.GetHRLog())
+        {
+            position.x = (log.Key * normalizedXValue)-400;
+            position.y = (log.Value.heartRate)-100;
+            lineRenderer.SetPosition(point, position);
+            point++;
+        }
     }
 
 }

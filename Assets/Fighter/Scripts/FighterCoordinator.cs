@@ -63,7 +63,9 @@ public class FighterCoordinator : MonoBehaviour
         fighterMaterial = material;
         foreach (MeshRenderer renderer in renderers)
         {
-            renderer.material = material;
+            if (!renderer.transform.name.Equals("Heart Symbol")){
+                renderer.material = material;
+            }
         }
         hmdMesh.material = hmdMaterial;
     }
