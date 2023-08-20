@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 33695846702051994}
   - component: {fileID: 33695846702051995}
   - component: {fileID: 33695846702051996}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: PoleArm
   m_TagString: Untagged
   m_Icon: {fileID: 0}

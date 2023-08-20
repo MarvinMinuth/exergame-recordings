@@ -136,23 +136,36 @@ public class LogDataManager : MonoBehaviour
     List<int> middleArmHighlights = new List<int>();
     List<int> topArmHighlights = new List<int>();
 
-    Dictionary<int, ArmCollisionLog> armCollisionLogs = new Dictionary<int, ArmCollisionLog>();
-    Dictionary<int, FightCollisionLog> fightCollisionLogs = new Dictionary<int, FightCollisionLog>();
+    Dictionary<int, ArmCollisionLog[]> armCollisionLogs = new Dictionary<int, ArmCollisionLog[]>();
+    Dictionary<int, ArmCollisionLog[]> successfulArmCollisionDic = new Dictionary<int, ArmCollisionLog[]>();
+    Dictionary<int, ArmCollisionLog[]> unsuccessfulArmCollisionDic = new Dictionary<int, ArmCollisionLog[]>();
+
+    Dictionary<int, FightCollisionLog[]> fightCollisionLogs = new Dictionary<int, FightCollisionLog[]>();
+    Dictionary<int, FightCollisionLog[]> successfulFightCollisionDic = new Dictionary<int, FightCollisionLog[]>();
+    Dictionary<int, FightCollisionLog[]> unsuccessfulFightCollisionDic = new Dictionary<int, FightCollisionLog[]>();
 
     private bool logsReady;
+    private bool filesCached = false;
 
     private void Start()
     {
         ES3.CacheFile(saveFile1);
         ES3.CacheFile(saveFile2);
+        filesCached = true;
     }
 
-    public async void LoadReplay(int saveFile)
+    public void LoadReplay(int saveFile)
     {
+        if (!filesCached)
+        {
+            ES3.CacheFile(saveFile1);
+            ES3.CacheFile(saveFile2);
+            filesCached = true;
+        }
         logsReady = false;
 
-        await Task.Run(() =>
-        {         
+        //await Task.Run(() =>
+                 
             var recording = new ES3Settings();
 
             if (saveFile == 1)
@@ -217,24 +230,68 @@ public class LogDataManager : MonoBehaviour
                 }
                 else if (key.Contains("ArmCollision"))
                 {
-                    // TODO: FCLogs nach top, mid, bot aufteilen; Kann sonst Probleme mit Keys geben
                     ArmCollisionLog armCollisionLog = ES3.Load<ArmCollisionLog>(key, recording);
-                    if (armCollisionLogs.ContainsKey(frame))
+                    if(!armCollisionLogs.ContainsKey(frame))
                     {
-                        armCollisionLogs.Remove(frame);
+                    armCollisionLogs.Add(frame, new ArmCollisionLog[3]);
                     }
-                    armCollisionLogs.Add(frame, armCollisionLog);
+
+                    string armBase = armCollisionLog.armBase;
+                    int position = 0;
+                    if (armBase.Equals("ArmBase 1")) position = 0;
+                    else if (armBase.Equals("ArmBase 2")) position = 1;
+                    else position = 2;
+
+                    armCollisionLogs[frame][position] = armCollisionLog;
+                    if (armCollisionLog.ExpectedCollisionType == armCollisionLog.ReceiveCollisionType)
+                    {
+                        if (!successfulArmCollisionDic.ContainsKey(frame))
+                        {
+                            successfulArmCollisionDic.Add(frame, new ArmCollisionLog[3]);
+                        }
+                        successfulArmCollisionDic[frame][position] = armCollisionLog;
+                    }
+                    else
+                    {
+                        if (!unsuccessfulArmCollisionDic.ContainsKey(frame))
+                        {
+                            unsuccessfulArmCollisionDic.Add(frame, new ArmCollisionLog[3]);
+                        }
+                        unsuccessfulArmCollisionDic[frame][position] = armCollisionLog;
+                    }
                 }
                 else if (key.Contains("FightCollision"))
                 {
-                    // TODO: FCLogs nach top, mid, bot aufteilen; Kann sonst Probleme mit Keys geben
                     FightCollisionLog fightCollisionLog = ES3.Load<FightCollisionLog>(key, recording);
-                    if (fightCollisionLogs.ContainsKey(frame))
+                    if (!fightCollisionLogs.ContainsKey(frame))
                     {
-                        fightCollisionLogs.Remove(frame);
+                        fightCollisionLogs.Add(frame, new FightCollisionLog[3]);
                     }
-                    fightCollisionLogs.Add(frame, fightCollisionLog);
-                }
+
+                    string armBase = fightCollisionLog.armBase;
+                    int position = 0;
+                    if (armBase.Equals("ArmBase 1")) position = 0;
+                    else if (armBase.Equals("ArmBase 2")) position = 1;
+                    else position = 2;
+
+                    fightCollisionLogs[frame][position] = fightCollisionLog;
+                    if (fightCollisionLog.ExpectedCollisionType == fightCollisionLog.ReceiveCollisionType)
+                    {
+                        if (!successfulFightCollisionDic.ContainsKey(frame))
+                        {
+                            successfulFightCollisionDic.Add(frame, new FightCollisionLog[3]);
+                        }
+                        successfulFightCollisionDic[frame][position] = fightCollisionLog;
+                    }
+                    else
+                    {
+                        if (!unsuccessfulFightCollisionDic.ContainsKey(frame))
+                        {
+                            unsuccessfulFightCollisionDic.Add(frame, new FightCollisionLog[3]);
+                        }
+                        unsuccessfulFightCollisionDic[frame][position] = fightCollisionLog;
+                    }
+            }
                 else if (key.Contains("HRLog"))
                 {
                     HRLog hrLog = ES3.Load<HRLog>(key, recording);
@@ -249,7 +306,6 @@ public class LogDataManager : MonoBehaviour
                     continue;
                 }
             }
-        });
 
         attachedToBottom = "";
         attachedToTop = "";
@@ -272,9 +328,13 @@ public class LogDataManager : MonoBehaviour
     public List<TransformLog> GetLeftHandTransformLogs() { return leftHandLogs; }
     public List<TransformLog> GetRightHandTransformLogs() { return rightHandLogs; }
 
-    public Dictionary<int, ArmCollisionLog> GetArmCollisionLogs() { return armCollisionLogs; }
+    public Dictionary<int, ArmCollisionLog[]> GetArmCollisionLogs() { return armCollisionLogs; }
+    public Dictionary<int, ArmCollisionLog[]> GetSuccsessfulArmCollisionLogs() { return successfulArmCollisionDic; }
+    public Dictionary<int, ArmCollisionLog[]> GetUnsuccsessfulArmCollisionLogs() { return unsuccessfulArmCollisionDic; }
 
-    public Dictionary<int, FightCollisionLog> GetFightCollisionLogs() { return fightCollisionLogs; }
+    public Dictionary<int, FightCollisionLog[]> GetFightCollisionLogs() { return fightCollisionLogs; }
+    public Dictionary<int, FightCollisionLog[]> GetSuccsessfulFightCollisionLogs() { return successfulFightCollisionDic; }
+    public Dictionary<int, FightCollisionLog[]> GetUnsuccsessfulFightCollisionLogs() { return unsuccessfulFightCollisionDic; }
 
     public Dictionary<int, HRLog> GetHRLogs() { return HRLogs; }
 

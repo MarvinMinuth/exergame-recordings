@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 4997417572828828481}
   - component: {fileID: 9025301201286366264}
   - component: {fileID: 5440057324276121253}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: BroadSword (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 3094571905149631692}
   - component: {fileID: 1890333301148094090}
   - component: {fileID: 92848443096231763}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Cylinder (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -192,7 +192,7 @@ GameObject:
   - component: {fileID: 7587072822954565970}
   - component: {fileID: 747761575020936486}
   - component: {fileID: 9032625898344051173}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: BroadSword_collision (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}

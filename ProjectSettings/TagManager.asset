@@ -8,6 +8,7 @@ TagManager:
   - ReplayManager
   - Fighter
   - Menu
+  - Heartrate
   layers:
   - Default
   - TransparentFX

@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 3940615313890994621}
   - component: {fileID: 3277219595811232201}
   - component: {fileID: 5850257245790836513}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: BroadSword
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   - component: {fileID: 3848850018271959396}
   - component: {fileID: 4571919108235157492}
   - component: {fileID: 1148044925230898994}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: BroadSword_collision
   m_TagString: Untagged
   m_Icon: {fileID: 0}

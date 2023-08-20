@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8072963920750939324}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 694205929301463888}
   - component: {fileID: 2990525113901211368}
   - component: {fileID: 4236414950608597417}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Wood Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -140,7 +140,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 7246535648307166279}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -274,7 +274,7 @@ GameObject:
   - component: {fileID: 7082222546996155407}
   - component: {fileID: 2783445636782713911}
   - component: {fileID: 1889251106824068922}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: 'PunchPanel '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -663,7 +663,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8999433656432946829}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: Mesh
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -696,7 +696,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5231576385651211035}
-  m_Layer: 13
+  m_Layer: 0
   m_Name: PunchPad
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -729,7 +729,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2403842287437958498}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Target
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -762,7 +762,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3750108907223636462}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Collider
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -798,7 +798,7 @@ GameObject:
   - component: {fileID: 4209700555330671601}
   - component: {fileID: 398583294075427769}
   - component: {fileID: 912220731487887827}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: Wood Panel
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -896,7 +896,7 @@ GameObject:
   - component: {fileID: 4575099391550896583}
   - component: {fileID: 2688440036118891317}
   - component: {fileID: 5141445839562980845}
-  m_Layer: 27
+  m_Layer: 0
   m_Name: 'PunchPanel '
   m_TagString: Untagged
   m_Icon: {fileID: 0}

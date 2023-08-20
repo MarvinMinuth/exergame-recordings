@@ -1,6 +1,7 @@
 ﻿using UnityEngine;
 using System.Collections;
 using UnityEngine.XR.Interaction.Toolkit;
+using UnityEngine.XR.Interaction.Toolkit.AffordanceSystem.Receiver.Primitives;
 
 [System.Serializable]
 public class HapticFeedback
@@ -293,5 +294,10 @@ public class AnimationScript : MonoBehaviour {
         public float GetBPMValue(float bpm)
     {
         return (bpm / 80);
+    }
+
+    public float GetBPM()
+    {
+        return bpm;
     }
 }

@@ -6,6 +6,7 @@ using static UnityEngine.PlayerLoop.PreLateUpdate;
 public class ReplayManager : MonoBehaviour
 {
     [SerializeField]
+    public bool loadReplayOnStart = false;
     public GameObject loadManager;
     public GameObject fighter;
     public GameObject fightDummy;
@@ -36,8 +37,14 @@ public class ReplayManager : MonoBehaviour
     private List<int> bottomArmHighlights;
     private List<int> middleArmHighlights;
     private List<int> topArmHighlights;
-    private Dictionary<int, ArmCollisionLog> armCollisionLogDic;
-    private Dictionary<int, FightCollisionLog> fightCollisionLogDic;
+    private Dictionary<int, ArmCollisionLog[]> armCollisionLogDic;
+    private Dictionary<int, ArmCollisionLog[]> succsessfulArmCollisionLogDic;
+    private Dictionary<int, ArmCollisionLog[]> unsuccsessfulArmCollisionLogDic;
+    private Dictionary<int, FightCollisionLog[]> fightCollisionLogDic;
+    private Dictionary<int, FightCollisionLog[]> succsessfulFightCollisionLogDic;
+    private Dictionary<int, FightCollisionLog[]> unsuccsessfulFightCollisionLogDic;
+
+
     private Dictionary<int, HRLog> hrLogDic;
 
     private bool areLogsReady = false;
@@ -59,6 +66,11 @@ public class ReplayManager : MonoBehaviour
         topArmBase = armsCoordinator.topArmBase; 
 
         menuCoordinator = menu.GetComponent<MenuCoordinator>();
+
+        if (loadReplayOnStart)
+        {
+            Load(1);
+        }
     }
 
     public void Load(int saveFile, Material material)
@@ -69,7 +81,6 @@ public class ReplayManager : MonoBehaviour
             Unload();
         }
 
-        Debug.Log(fighter.name);
         fighter.SetActive(true);
         fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
         head = fighterCoordinator.GetHead();
@@ -83,9 +94,28 @@ public class ReplayManager : MonoBehaviour
         StartCoroutine(WaitForLogs());       
     }
 
+    public void Load(int saveFile)
+    {
+        if (isLoading) return;
+        if (fileLoaded)
+        {
+            Unload();
+        }
+
+        fighter.SetActive(true);
+        fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
+        head = fighterCoordinator.GetHead();
+        leftHand = fighterCoordinator.GetLeftHand();
+        rightHand = fighterCoordinator.GetRightHand();
+
+        isLoading = true;
+        logDataManager.LoadReplay(saveFile);
+
+        StartCoroutine(WaitForLogs());
+    }
+
     void OnLogsLoaded()
     {
-        Debug.Log("OnLogsLoaded");
         isLoading = false;
 
         totalFrames = headTransformLogs.Count - 1;
@@ -102,7 +132,6 @@ public class ReplayManager : MonoBehaviour
         {
             yield return null;
         }
-        Debug.Log("Logs ready");
 
         headTransformLogs = logDataManager.GetHeadTransformLogs();
         leftHandTransformLogs = logDataManager.GetLeftHandTransformLogs();
@@ -117,7 +146,11 @@ public class ReplayManager : MonoBehaviour
         topArmHighlights = logDataManager.GetTopArmHighlights();
 
         armCollisionLogDic = logDataManager.GetArmCollisionLogs();
+        succsessfulArmCollisionLogDic = logDataManager.GetSuccsessfulArmCollisionLogs();
+        unsuccsessfulArmCollisionLogDic = logDataManager.GetUnsuccsessfulArmCollisionLogs();
         fightCollisionLogDic = logDataManager.GetFightCollisionLogs();
+        succsessfulFightCollisionLogDic = logDataManager.GetSuccsessfulFightCollisionLogs();
+        unsuccsessfulFightCollisionLogDic = logDataManager.GetUnsuccsessfulFightCollisionLogs();
         hrLogDic = logDataManager.GetHRLogs();
 
         OnLogsLoaded();
@@ -349,9 +382,14 @@ public class ReplayManager : MonoBehaviour
     public List<int> GetTopArmHighlights() { return topArmHighlights; }
     public List<int> GetMiddleArmHighlights() { return middleArmHighlights; }
 
-    public Dictionary<int, ArmCollisionLog> GetArmCollisionDic() { return armCollisionLogDic; }
+    public Dictionary<int, ArmCollisionLog[]> GetArmCollisionDic() { return armCollisionLogDic; }
 
-    public Dictionary<int, FightCollisionLog> GetFightCollisionDic() { return fightCollisionLogDic; }
+    public Dictionary<int, ArmCollisionLog[]> GetSuccsessfulArmCollisionDic() { return succsessfulArmCollisionLogDic; }
+    public Dictionary<int, ArmCollisionLog[]> GetUnsuccsessfulArmCollisionDic() { return unsuccsessfulArmCollisionLogDic; }
+
+    public Dictionary<int, FightCollisionLog[]> GetFightCollisionDic() { return fightCollisionLogDic; }
+    public Dictionary<int, FightCollisionLog[]> GetSuccsessfulFightCollisionDic() { return succsessfulFightCollisionLogDic; }
+    public Dictionary<int, FightCollisionLog[]> GetUnsuccsessfulFightCollisionDic() { return unsuccsessfulFightCollisionLogDic; }
 
     public Dictionary<int, HRLog> GetHRLog() { return hrLogDic; }
 

@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 1703718893165675298}
   - component: {fileID: 1703718893165675325}
   - component: {fileID: 1703718893165675324}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: 'OptionsButton '
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -481,7 +481,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1703718893462757041}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: HR_Elements
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -587,7 +587,7 @@ GameObject:
   - component: {fileID: 1703718893646970002}
   - component: {fileID: 1703718893646970093}
   - component: {fileID: 1703718893646970092}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: Text (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -798,7 +798,7 @@ GameObject:
   - component: {fileID: 1703718893768582492}
   - component: {fileID: 1703718893768582495}
   - component: {fileID: 1703718893768582494}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: PanelMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -985,7 +985,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1703718893930793617}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: MainMenu
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1122,7 +1122,7 @@ GameObject:
   - component: {fileID: 1703718893976797984}
   - component: {fileID: 1703718893976797987}
   - component: {fileID: 1703718893976797986}
-  m_Layer: 10
+  m_Layer: 0
   m_Name: Core
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1260,6 +1260,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6b1199b88c144a1459411f91acd2f79c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  prefabFolder: FightingDummy/Prefabs
   bottomArmBase: {fileID: 1703718895033635481}
   middleArmBase: {fileID: 1703718893386489439}
   topArmBase: {fileID: 1703718893227086354}
@@ -1454,7 +1455,7 @@ GameObject:
   - component: {fileID: 1703718894197708046}
   - component: {fileID: 1703718894197708044}
   - component: {fileID: 1703718894197708047}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: HeaderText
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1534,7 +1535,7 @@ GameObject:
   - component: {fileID: 1703718894224119866}
   - component: {fileID: 1703718894224119864}
   - component: {fileID: 1703718894224119867}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1769,7 +1770,7 @@ GameObject:
   - component: {fileID: 1703718894662707136}
   - component: {fileID: 1703718894662707139}
   - component: {fileID: 1703718894662707138}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: StartButton
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1903,7 +1904,7 @@ GameObject:
   - component: {fileID: 1703718894685544008}
   - component: {fileID: 1703718894685544011}
   - component: {fileID: 1703718894685544010}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: DisplayCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2120,7 +2121,7 @@ GameObject:
   - component: {fileID: 1703718894748374149}
   - component: {fileID: 1703718894748374148}
   - component: {fileID: 1703718894748374151}
-  m_Layer: 23
+  m_Layer: 0
   m_Name: CylinderTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2215,7 +2216,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1703718894869101789}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: Layout (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2254,7 +2255,7 @@ GameObject:
   - component: {fileID: 1703718894979255281}
   - component: {fileID: 1703718894979255280}
   - component: {fileID: 1703718894979255283}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: Text (TMP)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2520,7 +2521,7 @@ GameObject:
   - component: {fileID: 1703718895082651602}
   - component: {fileID: 1703718895082651437}
   - component: {fileID: 1703718895082651436}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: Sphere
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2713,7 +2714,7 @@ GameObject:
   - component: {fileID: 1703718895211850649}
   - component: {fileID: 1703718895211850648}
   - component: {fileID: 1703718895211850651}
-  m_Layer: 12
+  m_Layer: 0
   m_Name: Text (2)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
