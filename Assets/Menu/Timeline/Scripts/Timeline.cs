@@ -5,31 +5,19 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
-using static UnityEngine.GraphicsBuffer;
-using static UnityEngine.PlayerLoop.PreLateUpdate;
 
 public class Timeline : MonoBehaviour
 {
+    // Slider
     public float threshold = 60f;
-     
+    
     private Slider timeline;
-    private Button pauseButton;
-    private Button playButton;
-    private Button backwardsButton;
-    private Button fastPlayButton;
-    private Button stopButton;
-    private ReplayManager replayManager;
 
-    //Heartrate
-    private AnimationScript heartrateAnimator;
-    private Button audioFeedbackButton;
-    private Button visualFeedbackButton;
-    private Button hapticFeedbackButton;
-    private TMP_Dropdown heartPositionDropdown;
-    private TMP_Text heartrateInfo;
+    //Replay
 
-    private GameObject activeObject;
-
+    private ReplayController controller;
+    private ReplayManager manager;
+    public MenuCoordinator menuCoordinator;
 
     // Markers
     [Header("Marker")]
@@ -38,11 +26,16 @@ public class Timeline : MonoBehaviour
     public float highlightThreshold = 120f;
     private List<int> shownHighlights = new List<int>();
     private Dictionary<int, GameObject> shownMarkers = new Dictionary<int, GameObject>();
-    public bool showSuccsessfulArmCollisionHighlights;
-    public bool showUnsuccsessfulArmCollisionHighlights;
-    public bool showSuccsessfulFightCollisionHighlights;
+    //public bool showSuccsessfulArmCollisionHighlights;
+    //public bool showUnsuccsessfulArmCollisionHighlights;
+    //public bool showSuccsessfulFightCollisionHighlights;
     public bool showUnsuccsessfulFightCollisionHighlights;
-    private Button sacButton, sfcButton, uacButton, ufcButton;
+    //private Button sacButton, sfcButton, uacButton, ufcButton;
+    private int minFrame, maxFrame;
+    private int activatedButton;
+    public int windowSize = 180;
+    public bool isLooping = false;
+    
 
 
     private bool isDragged = false;
@@ -51,53 +44,48 @@ public class Timeline : MonoBehaviour
     private int frame;
     void Start()
     {
+        if(menuCoordinator == null)
+        {
+            menuCoordinator = GameObject.FindGameObjectWithTag("Menu").GetComponent<MenuCoordinator>();
+        }
+
         timeline = transform.Find("Slider").GetComponent<Slider>();
-        pauseButton = transform.Find("Buttons").Find("PauseButton").GetComponent<Button>();
-        playButton = transform.Find("Buttons").Find("PlayButton").GetComponent<Button>();
-        backwardsButton = transform.Find("Buttons").Find("Backwards").GetComponent<Button>();
-        fastPlayButton = transform.Find("Buttons").Find("FastForward").GetComponent<Button>();
-        stopButton = transform.Find("Buttons").Find("StopButton").GetComponent<Button>();
-        replayManager = GameObject.FindGameObjectWithTag("ReplayManager").GetComponent<ReplayManager>();
-        timeline.maxValue = (replayManager.GetReplayLength()) - 2;
 
-        pauseButton.onClick.AddListener(OnPauseButtonClick);
-        playButton.onClick.AddListener(OnPlayButtonClick);
-        stopButton.onClick.AddListener(OnStopButtonClick);
-        backwardsButton.onClick.AddListener(OnBackwardsButtonClick);
-        fastPlayButton.onClick.AddListener(OnFastPlayButtonPressed);
+        timeline.maxValue = 0;
+        controller = menuCoordinator.GetReplayController();
+        manager = menuCoordinator.GetReplayManager();
 
-        heartrateAnimator = GameObject.FindGameObjectWithTag("Heartrate").GetComponent<AnimationScript>();
-        audioFeedbackButton = transform.Find("Heartrate Buttons").Find("Audio Feedback Button").GetComponent<Button>();
-        visualFeedbackButton = transform.Find("Heartrate Buttons").Find("Visual Feedback Button").GetComponent<Button>();
-        hapticFeedbackButton = transform.Find("Heartrate Buttons").Find("Haptic Feedback Button").GetComponent<Button>();
-        heartPositionDropdown = transform.Find("Heartrate Buttons").Find("Heart Position Dropdown").GetComponent<TMP_Dropdown>();
-        heartrateInfo = transform.Find("Heartrate Info").Find("Info").GetComponent<TMP_Text>();
+        //sacButton = transform.Find("Marker Options").Find("SAC").GetComponent<Button>();
+        //sfcButton = transform.Find("Marker Options").Find("SFC").GetComponent<Button>();
+        //uacButton = transform.Find("Marker Options").Find("UAC").GetComponent<Button>();
+        //ufcButton = transform.Find("Marker Options").Find("UFC").GetComponent<Button>();
 
-        audioFeedbackButton.onClick.AddListener(OnAudioFeedbackButtonPressed);
-        visualFeedbackButton.onClick.AddListener(OnVisualFeedbackButtonPressed);
-        hapticFeedbackButton.onClick.AddListener(OnHapticFeedbackButtonPressed);
-        heartPositionDropdown.onValueChanged.AddListener(OnHeartPositionChanged);
+        //sacButton.onClick.AddListener(OnSACButtonClick);
+        //sfcButton.onClick.AddListener(OnSFCButtonClick);
+        //uacButton.onClick.AddListener(OnUACButtonClick);
+        //ufcButton.onClick.AddListener(OnUFCButtonClick);
+    }
 
-        sacButton = transform.Find("Marker Options").Find("SAC").GetComponent<Button>();
-        sfcButton = transform.Find("Marker Options").Find("SFC").GetComponent<Button>();
-        uacButton = transform.Find("Marker Options").Find("UAC").GetComponent<Button>();
-        ufcButton = transform.Find("Marker Options").Find("UFC").GetComponent<Button>();
+    public void SetupTimeline()
+    {
+        timeline.maxValue = (controller.GetReplayLength()) - 2;
 
-        sacButton.onClick.AddListener(OnSACButtonClick);
-        sfcButton.onClick.AddListener(OnSFCButtonClick);
-        uacButton.onClick.AddListener(OnUACButtonClick);
-        ufcButton.onClick.AddListener(OnUFCButtonClick);
-
-        SetButtonActive(playButton);
         frame = 6;
-        replayManager.LoadFrame(6);
-        SetupHeartrateGraph();
+        controller.LoadFrame(6);
 
-        SwitchSuccsessfulArmCollisionHighlights();
-        SwitchUnsuccsessfulArmCollisionHighlights();
-        SwitchSuccsessfulFightCollisionHighlights();
+        //SwitchSuccsessfulArmCollisionHighlights();
+        //SwitchUnsuccsessfulArmCollisionHighlights();
+        //SwitchSuccsessfulFightCollisionHighlights();
         SwitchUnsuccsessfulFightCollisionHighlights();
-        
+
+        maxFrame = (int)timeline.maxValue;
+        minFrame = (int)timeline.minValue; 
+    }
+
+    public void DeleteTimeline()
+    {
+        timeline.maxValue = 0;
+        RemoveAllMarkers();
     }
 
     /*
@@ -144,6 +132,7 @@ public class Timeline : MonoBehaviour
     }
     */
 
+    /*
     public void CreateArmCollisionHighlights(Dictionary<int, ArmCollisionLog[]> armCollisionDic)
     {
         foreach (KeyValuePair<int, ArmCollisionLog[]> log in armCollisionDic)
@@ -155,12 +144,12 @@ public class Timeline : MonoBehaviour
     {
         if(showSuccsessfulArmCollisionHighlights)
         {
-            CreateArmCollisionHighlights(replayManager.GetSuccsessfulArmCollisionDic());
+            CreateArmCollisionHighlights(manager.GetSuccsessfulArmCollisionDic());
             SetButtonActive(sacButton);
         }
         else
         {
-            RemoveArmCollisionHighlights(replayManager.GetSuccsessfulArmCollisionDic() );
+            RemoveArmCollisionHighlights(manager.GetSuccsessfulArmCollisionDic() );
             SetButtonInactive(sacButton);
         }
         
@@ -169,17 +158,16 @@ public class Timeline : MonoBehaviour
     {
         if (showUnsuccsessfulArmCollisionHighlights)
         {
-            CreateArmCollisionHighlights(replayManager.GetUnsuccsessfulArmCollisionDic());
+            CreateArmCollisionHighlights(manager.GetUnsuccsessfulArmCollisionDic());
             SetButtonActive(uacButton);
         }
         else
         {
-            RemoveArmCollisionHighlights(replayManager.GetUnsuccsessfulArmCollisionDic());
+            RemoveArmCollisionHighlights(manager.GetUnsuccsessfulArmCollisionDic());
             SetButtonInactive(uacButton);
         }
         
     }
-
     public void RemoveArmCollisionHighlights(Dictionary<int, ArmCollisionLog[]> armCollisionDic)
     {
         foreach (KeyValuePair<int, ArmCollisionLog[]> log in armCollisionDic)
@@ -187,6 +175,7 @@ public class Timeline : MonoBehaviour
             RemoveMark(log.Key);
         }
     }
+    */
 
     public void CreateFightCollisionHighlights(Dictionary<int, FightCollisionLog[]> fightCollisionDic)
     {
@@ -195,37 +184,40 @@ public class Timeline : MonoBehaviour
             SetMark(log.Key, markerColor);
         }
     }
+    /*
     public void SwitchSuccsessfulFightCollisionHighlights()
     {
         if (showSuccsessfulFightCollisionHighlights)
         {
-            CreateFightCollisionHighlights(replayManager.GetSuccsessfulFightCollisionDic());
+            CreateFightCollisionHighlights(manager.GetSuccsessfulFightCollisionDic());
             SetButtonActive(sfcButton);
         }
         else
         {
-            RemoveFightCollisionHighlights(replayManager.GetSuccsessfulFightCollisionDic());
+            RemoveFightCollisionHighlights(manager.GetSuccsessfulFightCollisionDic());
             SetButtonInactive(sfcButton);
         }
 
     }
+    */
     public void SwitchUnsuccsessfulFightCollisionHighlights()
     {
         if (showUnsuccsessfulFightCollisionHighlights)
         {
-            CreateFightCollisionHighlights(replayManager.GetUnsuccsessfulFightCollisionDic());
-            SetButtonActive(ufcButton);
+            CreateFightCollisionHighlights(manager.GetUnsuccsessfulFightCollisionDic());
+            //SetButtonActive(ufcButton);
         }
         else
         {
-            RemoveFightCollisionHighlights(replayManager.GetUnsuccsessfulFightCollisionDic());
-            SetButtonInactive(ufcButton);
+            RemoveFightCollisionHighlights(manager.GetUnsuccsessfulFightCollisionDic());
+            //SetButtonInactive(ufcButton);
         }
 
     }
-
+    /*
     public void OnSACButtonClick()
     {
+        if(!menuCoordinator.IsMenuActive()) { return; }
         if (showSuccsessfulArmCollisionHighlights)
         {
             showSuccsessfulArmCollisionHighlights = false;
@@ -239,6 +231,7 @@ public class Timeline : MonoBehaviour
 
     public void OnUACButtonClick()
     {
+        if (!menuCoordinator.IsMenuActive()) { return; }
         if (showUnsuccsessfulArmCollisionHighlights)
         {
             showUnsuccsessfulArmCollisionHighlights = false;
@@ -252,6 +245,7 @@ public class Timeline : MonoBehaviour
 
     public void OnSFCButtonClick()
     {
+        if (!menuCoordinator.IsMenuActive()) { return; }
         if (showSuccsessfulFightCollisionHighlights)
         {
             showSuccsessfulFightCollisionHighlights = false;
@@ -264,6 +258,7 @@ public class Timeline : MonoBehaviour
     }
     public void OnUFCButtonClick()
     {
+        if (!menuCoordinator.IsMenuActive()) { return; }
         if (showUnsuccsessfulFightCollisionHighlights)
         {
             showUnsuccsessfulFightCollisionHighlights = false;
@@ -274,45 +269,13 @@ public class Timeline : MonoBehaviour
         }
         SwitchUnsuccsessfulFightCollisionHighlights();
     }
-
+    */
 
     public void RemoveFightCollisionHighlights(Dictionary<int, FightCollisionLog[]> fightCollisionDic)
     {
         foreach (KeyValuePair<int, FightCollisionLog[]> log in fightCollisionDic)
         {
             RemoveMark(log.Key);
-        }
-    }
-
-    public void OnAudioFeedbackButtonPressed()
-    {
-        if (isDragged) { return; }
-        if (heartrateAnimator.useAudioFeedback) { heartrateAnimator.useAudioFeedback = false; }
-        else { heartrateAnimator.useAudioFeedback = true; }
-    }
-    public void OnVisualFeedbackButtonPressed() 
-    {
-        if (isDragged) { return; }
-        if (heartrateAnimator.useVisualFeedback) { heartrateAnimator.useVisualFeedback = false; }
-        else { heartrateAnimator.useVisualFeedback = true; }
-    }
-    public void OnHapticFeedbackButtonPressed() 
-    {
-        if (isDragged) { return; }
-        if (heartrateAnimator.useHapticFeedback) { heartrateAnimator.useHapticFeedback = false; }
-        else { heartrateAnimator.useHapticFeedback = true; }
-    }
-    public void OnHeartPositionChanged(int value) 
-    {
-        if (isDragged) { return ; }
-        switch (value)
-        {
-            case 0:
-                heartrateAnimator.position = Position.Dummy; break;
-            case 1:
-                heartrateAnimator.position = Position.FighterHead; break;
-            case 2:
-                heartrateAnimator.position = Position.FighterBody; break;
         }
     }
 
@@ -326,71 +289,12 @@ public class Timeline : MonoBehaviour
         button.GetComponent<Image>().color = Color.white;
     }
 
-    public void OnPauseButtonClick()
-    {
-        if (isDragged)
-        {
-            return;
-        }
-        if (replayManager.IsRunning())
-        {
-            replayManager.Pause();
-        }
-    }
-
-    public void OnPlayButtonClick()
-    {
-        if (isDragged)
-        {
-            return;
-        }
-        if (!replayManager.IsRunning())
-        {
-            replayManager.Play();
-        }
-        
-    }
-
-    public void OnStopButtonClick()
-    {
-        if (isDragged)
-        {
-            return;
-        }
-        replayManager.Stop();
-    }
-
-    public void OnFastPlayButtonPressed()
-    {
-        if (isDragged) { return; }
-        if(replayManager.GetPlaySpeed() == 1)
-        {
-            replayManager.SetPlaySpeed(2);
-        }
-        else
-        {
-            replayManager.SetPlaySpeed(1);
-        }
-    }
-
-    public void OnBackwardsButtonClick()
-    {
-        if (isDragged) { return; }
-        if (replayManager.GetPlayDirection() == 1)
-        {
-            replayManager.SetPlayDirection(-1);
-        }
-        else
-        {
-            replayManager.SetPlayDirection(1);;
-        }
-    }
-
     public void StartDrag()
     {
-        wasRunning = replayManager.IsRunning();
-        replayManager.Pause();
+        wasRunning = controller.IsRunning();
+        controller.Pause();
         isDragged = true;
+        controller.SetReceivingInput(true);
     }
 
     public void HandleSliderInteraction(BaseEventData eventData)
@@ -406,14 +310,17 @@ public class Timeline : MonoBehaviour
         isDragged = false;
         if (wasRunning)
         {
-            replayManager.Play();
+            controller.Play();
         }
+        controller.SetReceivingInput(false);
     }
 
 
     public void OnTimelineValueChanged(float value)
     {
         if (!isDragged) { return; }
+        if (value < minFrame) { value  = minFrame; }
+        if (value > maxFrame) { value = maxFrame; }
 
         int closestHighlight = 6;
         if(shownHighlights.Count != 0) { closestHighlight = shownHighlights.OrderBy(x => Mathf.Abs((long)x - value)).First(); }
@@ -425,8 +332,8 @@ public class Timeline : MonoBehaviour
             // Setze den Replay-Zeitpunkt auf den nächsten Highlight-Wert
             frame = closestHighlight;
             if(frame < 6) { frame = 6; }
-            replayManager.SetReplayTime(frame);
-            replayManager.LoadFrame(frame);
+            controller.SetFrame(frame);
+            controller.LoadFrame(frame);
         }
         else
         {
@@ -438,8 +345,8 @@ public class Timeline : MonoBehaviour
             {
                 // Setze den Replay-Zeitpunkt auf den Wert des Timelines
                 frame = (int)value;
-                replayManager.SetReplayTime(frame);
-                replayManager.LoadFrame(frame);
+                controller.SetFrame(frame);
+                controller.LoadFrame(frame);
             }
         }
     }
@@ -458,17 +365,8 @@ public class Timeline : MonoBehaviour
 
     void Update()
     {
-        IsButtonActive(playButton, replayManager.IsRunning());
-        IsButtonActive(pauseButton, !replayManager.IsRunning());
-        IsButtonActive(backwardsButton, replayManager.GetPlayDirection() == -1);
-        IsButtonActive(fastPlayButton, replayManager.GetPlaySpeed() > 1);
-
-        IsButtonActive(audioFeedbackButton, heartrateAnimator.useAudioFeedback);
-        IsButtonActive(visualFeedbackButton, heartrateAnimator.useVisualFeedback);
-        IsButtonActive(hapticFeedbackButton, heartrateAnimator.useHapticFeedback);
-
-        UpdateHeartrateInfo();
-        timeline.value = replayManager.GetReplayTime();
+        if (!controller.IsReplayReady()) { timeline.value = 0; }
+        else { timeline.value = controller.GetFrame(); }
     }
 
     public Vector2 GetMarkerPosition(float value)
@@ -496,10 +394,54 @@ public class Timeline : MonoBehaviour
             shownHighlights.Add(frame);
             Vector2 markerPosition = GetMarkerPosition(frame);
             GameObject mark = Instantiate(marker, transform, false);
+            mark.GetComponent<Marker>().frame = frame;
             mark.GetComponent<RectTransform>().localPosition = markerPosition;
             mark.GetComponent<Image>().color = color;
             shownMarkers.Add(frame, mark);
         }
+    }
+
+    public void OnMarkerButtonClick(int frame)
+    {
+        if (shownMarkers.ContainsKey(activatedButton))
+        { 
+            SetButtonInactive(shownMarkers[activatedButton].GetComponent<Button>());
+            SetButtonInactive(shownMarkers[activatedButton].transform.Find("Top Button").GetComponent<Button>());
+            manager.DestroyTrajectories();
+        }
+        if (frame != activatedButton)
+        {
+            activatedButton = frame;
+            SetButtonActive(shownMarkers[activatedButton].GetComponent<Button>());
+            SetButtonActive(shownMarkers[activatedButton].transform.Find("Top Button").GetComponent<Button>());
+            minFrame = frame - (windowSize / 2);
+            if (minFrame < timeline.minValue) { minFrame = (int)timeline.minValue; }
+            maxFrame = frame + (windowSize / 2);
+            if (maxFrame > timeline.maxValue) { maxFrame = (int)timeline.maxValue; }
+            manager.CreateTrajectories(minFrame, maxFrame);
+            controller.ChangeReplayWindow(minFrame, maxFrame);
+            controller.SetFrame(minFrame);
+        }
+        else
+        {
+            minFrame = (int) timeline.minValue;
+            maxFrame = (int) timeline.maxValue;
+            controller.ResetReplayWindow();
+            activatedButton = 0;
+        }    
+    }
+
+    public void DeactivateActiveMark()
+    {
+        if (shownMarkers.ContainsKey(activatedButton))
+        {
+            SetButtonInactive(shownMarkers[activatedButton].GetComponent<Button>());
+            SetButtonInactive(shownMarkers[activatedButton].transform.Find("Top Button").GetComponent<Button>());
+            manager.DestroyTrajectories();
+        }
+        minFrame = (int)timeline.minValue;
+        maxFrame = (int)timeline.maxValue;
+        activatedButton = 0;
     }
 
     public void RemoveMark(int frame)
@@ -509,35 +451,41 @@ public class Timeline : MonoBehaviour
         if (!shownHighlights.Contains(frame))
         {
             Destroy(shownMarkers[frame]);
+            if (frame == activatedButton)
+            {
+                minFrame = (int)timeline.minValue;
+                maxFrame = (int)timeline.maxValue;
+                controller.ResetReplayWindow();
+                manager.DestroyTrajectories();
+            }
             shownMarkers.Remove(frame);
         }
 
     }
 
-    public void SetupHeartrateGraph()
+    public void RemoveAllMarkers()
     {
-        LineRenderer lineRenderer = transform.Find("Slider").Find("Background").GetComponent<LineRenderer>();
-        lineRenderer.positionCount = replayManager.GetHRLog().Count+1;
-        int point = 0;
-        Vector3 position = new Vector3(-400, -20, 1);
-        lineRenderer.SetPosition(point, position);
-
-        point++;
-
-        float normalizedXValue = 800 / (timeline.maxValue - timeline.minValue);
-
-        foreach(KeyValuePair<int, HRLog> log in replayManager.GetHRLog())
+        foreach (KeyValuePair <int, GameObject> marker in shownMarkers)
         {
-            position.x = (log.Key * normalizedXValue)-400;
-            position.y = (log.Value.heartRate)-100;
-            lineRenderer.SetPosition(point, position);
-            point++;
+            Destroy(marker.Value);
         }
+        shownHighlights.Clear();
+        shownMarkers.Clear();
     }
 
-    public void UpdateHeartrateInfo()
+    public float GetMaxValue()
     {
-        heartrateInfo.text = heartrateAnimator.GetBPM().ToString();
+        return timeline.maxValue;
+    }
+
+    public float GetMinValue()
+    {
+        return timeline.minValue;
+    }
+
+    public Slider GetSlider()
+    {
+        return timeline;
     }
 
 }

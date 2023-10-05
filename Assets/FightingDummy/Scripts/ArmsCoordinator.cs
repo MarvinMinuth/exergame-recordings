@@ -8,7 +8,6 @@ using UnityEngine;
 public class ArmsCoordinator : MonoBehaviour
 {
     public string prefabFolder = "FightingDummy/Prefabs";
-    private List<GameObject> prefabList;
 
     public GameObject bottomArmBase;
     public GameObject middleArmBase;
@@ -20,9 +19,11 @@ public class ArmsCoordinator : MonoBehaviour
     private GameObject topArmSlot;
     private List<GameObject> armSlots;
 
+    private Dictionary<GameObject, GameObject> activeArms = new Dictionary<GameObject, GameObject>();
+
     void Start()
     {
-        LoadPrefabs();
+        //LoadPrefabs();
 
         bottomArmSlot = FindArmSlot(bottomArmBase);
         middleArmSlot = FindArmSlot(middleArmBase);
@@ -39,6 +40,7 @@ public class ArmsCoordinator : MonoBehaviour
         return armBase.transform.Find("Binding").Find("ArmSlot").gameObject;
     }
 
+    /*
     void LoadPrefabs()
     {
         prefabList = new List<GameObject>();
@@ -58,6 +60,7 @@ public class ArmsCoordinator : MonoBehaviour
             }
         }
     }
+    */
 
     public void SetPosition(GameObject armBase, Vector3 position)
     {
@@ -79,55 +82,68 @@ public class ArmsCoordinator : MonoBehaviour
 
     public void SetTargetPosition(GameObject armBase, Vector3 targetPosition)
     {
-        if (armBase == null)
+        Transform target = CheckForTarget(armBase);
+        if (target == null)
         {
             return;
         }
-        GameObject armSlot = FindArmSlot(armBase);
-        if (armSlot == null || armSlot.transform.childCount < 2 || armSlot.transform.GetChild(1).Find("Target") == null)
-        {
-            return;
-        }
-        armSlot.transform.GetChild(1).Find("Target").transform.position = targetPosition;
+        target.transform.position = targetPosition;
     }
 
     public void SetTargetRotation(GameObject armBase, Quaternion rotation)
     {
-        if (armBase == null)
+        Transform target = CheckForTarget(armBase);
+        if (target == null)
         {
             return;
         }
-        GameObject armSlot = FindArmSlot(armBase);
-        if (armSlot == null || armSlot.transform.childCount < 2 || armSlot.transform.GetChild(1).Find("Target") == null)
+        target.transform.rotation = rotation;
+    }
+
+    private Transform CheckForTarget(GameObject armBase)
+    {
+        if (armBase == null || !activeArms.ContainsKey(armBase) || activeArms[armBase] == null)
         {
-            return;
+            return null;
         }
-        armSlot.transform.GetChild(1).Find("Target").transform.rotation = rotation;
+        Transform target = activeArms[armBase].transform.Find("Target");
+
+        return target;
     }
 
     public void AttachToArmBase(GameObject armBase, string arm)
     {
         GameObject armSlot = FindArmSlot(armBase);
-        if (armSlot.transform.Find(arm + "(Clone)") != null)
+        GameObject spawnArm = armSlot.transform.Find(arm).gameObject;
+        if (spawnArm == null || (activeArms.ContainsKey(armBase) && activeArms[armBase] == spawnArm))
         {
             return;   
         }
         DetachFromArmBase(armBase);
-        GameObject spawnArm = GetPrefabByName(arm);
-        if (spawnArm != null)
-        {
-            Instantiate(spawnArm, armSlot.transform);
-        }
+        spawnArm.SetActive(true);
+        // GameObject activeArm = Instantiate(spawnArm, armSlot.transform);
+        activeArms.Add(armBase, spawnArm);
     }
+
+    /*
+    bool IsInstanceOfPrefab(GameObject obj, GameObject prefab)
+    {
+        if (PrefabUtility.GetCorrespondingObjectFromOriginalSource(obj) == prefab)
+            return true;
+
+        return false;
+    }
+    */
 
     public void DetachFromArmBase(GameObject armBase)
     {
-        GameObject armSlot = FindArmSlot(armBase);
-        if (armSlot.transform.childCount < 2)
+        if (!activeArms.ContainsKey(armBase))
         {
             return;
         }
-        Destroy(armSlot.transform.GetChild(1).gameObject);
+        activeArms[armBase].SetActive(false);
+        //Destroy(activeArms[armBase]);
+        activeArms.Remove(armBase);
     }
 
     /*
@@ -293,29 +309,41 @@ public class ArmsCoordinator : MonoBehaviour
     */
     public void DetachFromBottom()
     {
+        /*
         if (bottomArmSlot.transform.childCount < 2)
         {
-            return;
+            return; 
         }
         Destroy(bottomArmSlot.transform.GetChild(1).gameObject);
+        */
+        DetachFromArmBase(bottomArmBase);
+
     }
 
     public void DetachFromMiddle()
     {
+        /*
         if (middleArmSlot.transform.childCount < 2)
         {
             return;
         }
         Destroy(middleArmSlot.transform.GetChild(1).gameObject);
+        */
+        DetachFromArmBase(middleArmBase);
+
     }
 
     public void DetachFromTop()
     {
+        /*
         if (topArmSlot.transform.childCount < 2)
         {
             return;
         }
         Destroy(topArmSlot.transform.GetChild(1).gameObject);
+        */
+        DetachFromArmBase(topArmBase);
+
     }
 
     public void DetachAll()
@@ -325,7 +353,7 @@ public class ArmsCoordinator : MonoBehaviour
         DetachFromTop();
     }
 
-
+    /*
     private GameObject GetPrefabByName(string name)
     {
         foreach (GameObject prefab in prefabList)
@@ -339,6 +367,7 @@ public class ArmsCoordinator : MonoBehaviour
         Debug.Log("Arm " + name + " not found!");
         return null; // Kein Prefab mit dem angegebenen Namen gefunden
     }
+    */
 
     public void ResetArms()
     {

@@ -6,6 +6,7 @@ public class MenuCube : MonoBehaviour
 {
     public GameObject target;
     public float distanceToPlace = 1.0f;
+    private bool isDragged = false;
 
     // Start is called before the first frame update
     void Start()
@@ -16,12 +17,21 @@ public class MenuCube : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        
+        if (isDragged)
+        {
+            AlignToTarget();
+        }
     }
 
     public void OnSelectExit()
     {
+        isDragged = false;
         AlignToTarget();
+    }
+
+    public void OnSelectEnter()
+    {
+        isDragged = true;
     }
 
     public void AlignToTarget()

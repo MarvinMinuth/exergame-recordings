@@ -116,7 +116,8 @@ public class HRLog
 
 public class LogDataManager : MonoBehaviour
 {
-    public string saveFile1, saveFile2;
+    public FileManager fileManager;
+    public string saveFile;
     private string attachedToBottom, attachedToTop, attachedToMiddle;
 
     List<string> armLogs = new List<string>();
@@ -145,37 +146,30 @@ public class LogDataManager : MonoBehaviour
     Dictionary<int, FightCollisionLog[]> unsuccessfulFightCollisionDic = new Dictionary<int, FightCollisionLog[]>();
 
     private bool logsReady;
-    private bool filesCached = false;
+    private bool loading;
 
     private void Start()
     {
-        ES3.CacheFile(saveFile1);
-        ES3.CacheFile(saveFile2);
-        filesCached = true;
+        saveFile = Application.persistentDataPath + "/Logs/" + saveFile;
+        StartCoroutine(WaitUntilFilesAreReady());
+        LoadReplay();
     }
 
-    public void LoadReplay(int saveFile)
+    private IEnumerator WaitUntilFilesAreReady()
     {
-        if (!filesCached)
+        while (!fileManager.FilesAreReady())
         {
-            ES3.CacheFile(saveFile1);
-            ES3.CacheFile(saveFile2);
-            filesCached = true;
+            yield return null;
         }
+    }
+
+    public void LoadReplay()
+    {
+        loading = true;
         logsReady = false;
-
-        //await Task.Run(() =>
+        ES3.CacheFile(saveFile);
                  
-            var recording = new ES3Settings();
-
-            if (saveFile == 1)
-            {
-                recording = new ES3Settings(saveFile1, ES3.Location.Cache);
-            }
-            else
-            {
-                recording = new ES3Settings(saveFile2, ES3.Location.Cache);
-            }
+            var recording = new ES3Settings(saveFile, ES3.Location.Cache);
 
             int frame = 0;
             foreach (string key in ES3.GetKeys(recording))
@@ -312,6 +306,7 @@ public class LogDataManager : MonoBehaviour
         attachedToMiddle = "";
 
         logsReady = true;
+        loading = false;
     }
 
     public List<ArmLog> GetBottomArmLogs()   { return bottomArmLogs; }
@@ -342,4 +337,6 @@ public class LogDataManager : MonoBehaviour
     {
         return logsReady;
     }
+
+    public bool IsLoading() { return loading; }
 }

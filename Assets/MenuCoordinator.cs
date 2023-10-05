@@ -1,17 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuCoordinator : MonoBehaviour
 {
     [SerializeField]
-    public GameObject timelinePrefab;
-    public GameObject fighterButtonsPrefab;
-    public GameObject menuPanel;
     public Material transparentFighterMaterial;
 
-    private GameObject timeline;
-    private GameObject fighterButtons;
+    public Timeline timeline;
+    public FighterButtons fighterButtons;
+    public FighterMiniStatue fighterMiniStatue;
+    public HeartrateGraph heartrateGraph;
+    public ReplayControlButtons replayControlButtons;
+    public ReplayManager manager;
+    public ReplayController controller;
+
+    public bool fighterHeadShown, fighterBodyShown, fighterLeftHandShown, fighterRightHandShown;
+    
 
     // Start is called before the first frame update
     void Start()
@@ -25,27 +32,76 @@ public class MenuCoordinator : MonoBehaviour
         
     }
 
+    public void Stop()
+    {
+        timeline.DeactivateActiveMark();
+    }
+    
     public void SetupMenu()
     {
-        if (timelinePrefab != null)
-        {
-            timeline = Instantiate(timelinePrefab, menuPanel.transform);
-        }
-
-        if (fighterButtonsPrefab != null)
-        {
-            fighterButtons = Instantiate(fighterButtonsPrefab, menuPanel.transform);
-        }
+        timeline.SetupTimeline();
+        heartrateGraph.SetupHeartrateGraph(manager.GetHRLog());
+        //fighterButtons.SetupFighterButtons();
+        ShowAllBodyParts();
+        fighterMiniStatue.SetupFighterButtons();
     }
+    
 
     public void DestroyMenu()
     {
-        if (timeline != null) { Destroy(timeline); }
-        if (fighterButtons != null) { Destroy(fighterButtons); }
+        replayControlButtons.ResetButtons();
+        timeline.DeleteTimeline();
+        heartrateGraph.DeleteGraph();
+        ShowNoBodyParts();
+        //fighterButtons.ResetFighterButtons();
+        fighterMiniStatue.ResetFighterButtons();
     }
 
+    public ReplayManager GetReplayManager() { return manager; }
+    public ReplayController GetReplayController() { return controller; }
 
+    public float GetTimelineMaxValue()
+    {
+        return timeline.GetMaxValue();
+    }
 
-    public GameObject GetTimeline() { return timeline; }
-    public GameObject GetFighterButtons() {  return fighterButtons; }
+    public float GetTimelineMinValue()
+    {
+        return timeline.GetMinValue();
+    }
+
+    public Slider GetTimelineSlider()
+    {
+        return timeline.GetSlider();
+    }
+
+    public bool IsMenuActive()
+    {
+        return controller.IsReplayReady();
+    }
+
+    private void ShowNoBodyParts()
+    {
+        fighterHeadShown = false;
+        fighterBodyShown = false;
+        fighterLeftHandShown = false;
+        fighterRightHandShown = false;
+    }
+    private void ShowAllBodyParts()
+    {
+        fighterHeadShown = true;
+        fighterBodyShown = true;
+        fighterLeftHandShown = true;
+        fighterRightHandShown = true;
+    }
+
+    public void StopTimelineUsage()
+    {
+        timeline.GetSlider().interactable = false;
+    }
+
+    public void AllowTimelineUsage()
+    {
+        timeline.GetSlider().interactable = true;
+    }
 }

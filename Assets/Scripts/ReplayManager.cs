@@ -3,19 +3,25 @@ using System.Collections.Generic;
 using UnityEngine;
 using static UnityEngine.PlayerLoop.PreLateUpdate;
 
-public class ReplayManager : MonoBehaviour
+public enum Savefile
 {
-    [SerializeField]
-    public bool loadReplayOnStart = false;
-    public GameObject loadManager;
+    Tutorial,
+    TaskOne,
+    TaskTwo,
+    TaskThree,
+}
+
+public class ReplayManager : MonoBehaviour
+{   
+    public GameObject loadManager1, loadManager2;
+    public LogDataManager tutorialLogDataManager, taskOneLogDataManager, taskTwoLogDataManager, taskThreeLogDataManager;
     public GameObject fighter;
     public GameObject fightDummy;
     public GameObject menu;
 
-    GameObject timeSlider;
-    private MenuCoordinator menuCoordinator;
+    //private MenuCoordinator menuCoordinator;
 
-    private LogDataManager logDataManager;
+    private LogDataManager activeLogDataManager, logDataManager1, logDataManager2;
     private FighterCoordinator fighterCoordinator;
     private ArmsCoordinator armsCoordinator;
 
@@ -24,7 +30,6 @@ public class ReplayManager : MonoBehaviour
 
     private int frame = 6;
     private int totalFrames = 0;
-    private float nextUpdate = 0f;
 
     private List<TransformLog> headTransformLogs;
     private List<TransformLog> leftHandTransformLogs;
@@ -47,69 +52,70 @@ public class ReplayManager : MonoBehaviour
 
     private Dictionary<int, HRLog> hrLogDic;
 
-    private bool areLogsReady = false;
-    private bool isRunning = false;
     private bool isLoading = false;
     private bool fileLoaded = false;
 
-    private int playSpeed = 1;
-    private int playDirection = 1;
-
-    // Start is called before the first frame update
     void Start()
     {
-        logDataManager = loadManager.GetComponent<LogDataManager>();
+        logDataManager1 = loadManager1.GetComponent<LogDataManager>();
+        logDataManager2 = loadManager2.GetComponent<LogDataManager>();
         armsCoordinator = fightDummy.GetComponent<ArmsCoordinator>();
 
         bottomArmBase = armsCoordinator.bottomArmBase;
         middleArmBase = armsCoordinator.middleArmBase;
         topArmBase = armsCoordinator.topArmBase; 
 
-        menuCoordinator = menu.GetComponent<MenuCoordinator>();
-
-        if (loadReplayOnStart)
-        {
-            Load(1);
-        }
+        //menuCoordinator = menu.GetComponent<MenuCoordinator>();
     }
-
-    public void Load(int saveFile, Material material)
+    private void StartLoad(Savefile saveFile)
     {
         if (isLoading) return;
+        isLoading = true;
         if (fileLoaded)
         {
             Unload();
         }
+
+        if (saveFile == Savefile.TaskOne)
+        {
+            activeLogDataManager = loadManager1.GetComponent<LogDataManager>();
+        }
+        else
+        {
+            activeLogDataManager = loadManager2.GetComponent<LogDataManager>();
+        }
+
+        frame = 0;
 
         fighter.SetActive(true);
         fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
         head = fighterCoordinator.GetHead();
         leftHand = fighterCoordinator.GetLeftHand();
         rightHand = fighterCoordinator.GetRightHand();
+    }
 
-        isLoading = true;
+    public void Load(Savefile saveFile, Material material)
+    {
+        StartLoad(saveFile);
+
         fighterCoordinator.ChangeMaterial(material);
-        logDataManager.LoadReplay(saveFile);
+
+        if (!activeLogDataManager.AreLogsReady() && !activeLogDataManager.IsLoading())
+        {
+            activeLogDataManager.LoadReplay();
+        }
 
         StartCoroutine(WaitForLogs());       
     }
 
-    public void Load(int saveFile)
+    public void Load(Savefile saveFile)
     {
-        if (isLoading) return;
-        if (fileLoaded)
+        StartLoad(saveFile);
+
+        if (!activeLogDataManager.AreLogsReady() && !activeLogDataManager.IsLoading())
         {
-            Unload();
+            activeLogDataManager.LoadReplay();
         }
-
-        fighter.SetActive(true);
-        fighterCoordinator = fighter.GetComponent<FighterCoordinator>();
-        head = fighterCoordinator.GetHead();
-        leftHand = fighterCoordinator.GetLeftHand();
-        rightHand = fighterCoordinator.GetRightHand();
-
-        isLoading = true;
-        logDataManager.LoadReplay(saveFile);
 
         StartCoroutine(WaitForLogs());
     }
@@ -119,101 +125,55 @@ public class ReplayManager : MonoBehaviour
         isLoading = false;
 
         totalFrames = headTransformLogs.Count - 1;
-        SetupMenu();
+        //SetupMenu();
 
-        fileLoaded = true;
-        areLogsReady = true;
-        Play();
+        fileLoaded = true;;
     }
 
     IEnumerator WaitForLogs()
     {
-        while (!logDataManager.AreLogsReady())
+        while (!activeLogDataManager.AreLogsReady())
         {
             yield return null;
         }
 
-        headTransformLogs = logDataManager.GetHeadTransformLogs();
-        leftHandTransformLogs = logDataManager.GetLeftHandTransformLogs();
-        rightHandTransformLogs = logDataManager.GetRightHandTransformLogs();
+        headTransformLogs = activeLogDataManager.GetHeadTransformLogs();
+        leftHandTransformLogs = activeLogDataManager.GetLeftHandTransformLogs();
+        rightHandTransformLogs = activeLogDataManager.GetRightHandTransformLogs();
 
-        bottomArmLogs = logDataManager.GetBottomArmLogs();
-        middleArmLogs = logDataManager.GetMiddleArmLogs();
-        topArmLogs = logDataManager.GetTopArmLogs();
+        bottomArmLogs = activeLogDataManager.GetBottomArmLogs();
+        middleArmLogs = activeLogDataManager.GetMiddleArmLogs();
+        topArmLogs = activeLogDataManager.GetTopArmLogs();
 
-        bottomArmHighlights = logDataManager.GetBottomArmHighlights();
-        middleArmHighlights = logDataManager.GetMiddleArmHighlights();
-        topArmHighlights = logDataManager.GetTopArmHighlights();
+        bottomArmHighlights = activeLogDataManager.GetBottomArmHighlights();
+        middleArmHighlights = activeLogDataManager.GetMiddleArmHighlights();
+        topArmHighlights = activeLogDataManager.GetTopArmHighlights();
 
-        armCollisionLogDic = logDataManager.GetArmCollisionLogs();
-        succsessfulArmCollisionLogDic = logDataManager.GetSuccsessfulArmCollisionLogs();
-        unsuccsessfulArmCollisionLogDic = logDataManager.GetUnsuccsessfulArmCollisionLogs();
-        fightCollisionLogDic = logDataManager.GetFightCollisionLogs();
-        succsessfulFightCollisionLogDic = logDataManager.GetSuccsessfulFightCollisionLogs();
-        unsuccsessfulFightCollisionLogDic = logDataManager.GetUnsuccsessfulFightCollisionLogs();
-        hrLogDic = logDataManager.GetHRLogs();
+        armCollisionLogDic = activeLogDataManager.GetArmCollisionLogs();
+        succsessfulArmCollisionLogDic = activeLogDataManager.GetSuccsessfulArmCollisionLogs();
+        unsuccsessfulArmCollisionLogDic = activeLogDataManager.GetUnsuccsessfulArmCollisionLogs();
+        fightCollisionLogDic = activeLogDataManager.GetFightCollisionLogs();
+        succsessfulFightCollisionLogDic = activeLogDataManager.GetSuccsessfulFightCollisionLogs();
+        unsuccsessfulFightCollisionLogDic = activeLogDataManager.GetUnsuccsessfulFightCollisionLogs();
+        hrLogDic = activeLogDataManager.GetHRLogs();
 
         OnLogsLoaded();
     }
 
-    public void Play()
-    {
-        isRunning = true;
-    }
-
-    public void Pause()
-    {
-        isRunning = false;
-    }
-
-    public void SetPlaySpeed(int speed)
-    {
-        playSpeed = speed;
-    }
-    public void SetPlayDirection(int direction)
-    {
-        playDirection = direction;
-    }
-
-    public int GetPlaySpeed() { return playSpeed; }
-    public int GetPlayDirection() {  return playDirection; }
-
     public void Stop()
     {
-        isRunning = false;
         frame = 6;
         LoadFrame(frame);
-        playDirection = 1;
-        playSpeed = 1;
+        DestroyTrajectories();
     }
 
-   
-
-    // Update is called once per frame
     void Update()
     {
-        if (!isRunning)
-        {
-            return;
-        }
-        // Überprüfe, ob 1/60 Sekunde vergangen ist
-        if (Time.time >= nextUpdate)
-        {
-            LoadNextFrame();
-            // Berechne den Zeitpunkt des nächsten Updates
-            nextUpdate = Time.time + (1f / (60f * playSpeed));
-        }
     }
 
     public int GetReplayLength()
     {
         return totalFrames;
-    }
-
-    public void SetReplayTime(int newFrame)
-    {
-        LoadFrame(newFrame);
-        frame = newFrame;
     }
 
     public int GetReplayTime()
@@ -223,7 +183,7 @@ public class ReplayManager : MonoBehaviour
 
     public void LoadFrame(int frame)
     {
-        if(!areLogsReady || !fileLoaded)
+        if(isLoading)
         {
             return;
         }
@@ -232,6 +192,7 @@ public class ReplayManager : MonoBehaviour
         {
             return;
         }
+        this.frame = frame;
 
         SetBodyPosition(head, headTransformLogs[frame]);
         SetBodyPosition(leftHand, leftHandTransformLogs[frame]);
@@ -253,6 +214,7 @@ public class ReplayManager : MonoBehaviour
         SetDummyRotation(middleArmBase, middleArmLogs[frame]);
         SetDummyRotation(topArmBase, topArmLogs[frame]);
 
+        
         SetDummyTargetPosition(bottomArmBase, bottomArmLogs[frame]);
         SetDummyTargetPosition(middleArmBase, middleArmLogs[frame]);
         SetDummyTargetPosition(topArmBase, topArmLogs[frame]);
@@ -260,35 +222,24 @@ public class ReplayManager : MonoBehaviour
         SetDummyTargetRotation(bottomArmBase, bottomArmLogs[frame]);
         SetDummyTargetRotation(middleArmBase, middleArmLogs[frame]);
         SetDummyTargetRotation(topArmBase.gameObject, topArmLogs[frame]);
+        
     }
-
+    
     public void SetupMenu()
     {
-        menuCoordinator.SetupMenu();
-        timeSlider = menuCoordinator.GetTimeline();
+        //menuCoordinator.SetupMenu();
     }
-
-    public void LoadNextFrame()
-    {
-        LoadFrame(frame);
-        frame += playDirection;
-
-        if(frame > totalFrames )
-        {
-            Stop();
-        }
-    }
+    
 
     public void Unload()
-    {     
+    {
+        //menuCoordinator.DestroyMenu();
         fighterCoordinator.ChangeToIdleMaterial();
         fighter.SetActive(false);
         Stop();
         armsCoordinator.ResetArms();
         fileLoaded = false;
-        menuCoordinator.DestroyMenu();
-
-        ClearLogs();    
+        //ClearLogs();    
     }
 
     void ClearLogs()
@@ -373,9 +324,34 @@ public class ReplayManager : MonoBehaviour
         fighterCoordinator.SetRotation(gameObject, Quaternion.Euler(transformLog.Rotation));
     }
 
-    public bool IsRunning()
+    public void CreateTrajectories(int minFrame, int maxFrame)
     {
-        return isRunning;
+        Trajectories trajectories = head.GetComponent<Trajectories>();
+        trajectories.SetFrames(minFrame, maxFrame);
+        trajectories.SetLogs(headTransformLogs);
+        trajectories.CreateTrajectories();
+
+        trajectories = leftHand.GetComponent<Trajectories>();
+        trajectories.SetFrames(minFrame, maxFrame);
+        trajectories.SetLogs(leftHandTransformLogs);
+        trajectories.CreateTrajectories();
+
+        trajectories = rightHand.GetComponent<Trajectories>();
+        trajectories.SetFrames(minFrame, maxFrame);
+        trajectories.SetLogs(rightHandTransformLogs);
+        trajectories.CreateTrajectories();
+    }
+
+    public void DestroyTrajectories()
+    {
+        Trajectories trajectories = head.GetComponent<Trajectories>();
+        trajectories.DestroyTrajectories();
+
+        trajectories = leftHand.GetComponent<Trajectories>(); 
+        trajectories.DestroyTrajectories();
+
+        trajectories = rightHand.GetComponent<Trajectories>();
+        trajectories.DestroyTrajectories();
     }
 
     public List<int> GetBottomArmHighlights(){ return bottomArmHighlights; }
@@ -394,4 +370,9 @@ public class ReplayManager : MonoBehaviour
     public Dictionary<int, HRLog> GetHRLog() { return hrLogDic; }
 
     public bool IsLoading() { return isLoading; }
+
+    public bool FileIsLoaded()
+    {
+        return fileLoaded;
+    }
 }

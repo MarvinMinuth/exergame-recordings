@@ -9,6 +9,9 @@ TagManager:
   - Fighter
   - Menu
   - Heartrate
+  - Timeline
+  - Heartrate Graph Target
+  - Fighter Loader
   layers:
   - Default
   - TransparentFX
