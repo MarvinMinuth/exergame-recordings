@@ -1,12 +1,6 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using System.IO;
-using Unity.Burst.Intrinsics;
-using static UnityEngine.PlayerLoop.PreLateUpdate;
-using JetBrains.Annotations;
-using System.Threading.Tasks;
 
 [System.Serializable]
 public class LogData
@@ -25,6 +19,7 @@ public class BaseLog
 public class FightCollisionLog
 {
     public string __type;
+    public int frame;
     public int ExpectedCollisionType;
     public int ReceiveCollisionType;
     public string armBase;
@@ -40,6 +35,7 @@ public class FightCollisionLog
 public class ArmCollisionLog
 {
     public string __type;
+    public int frame;
     public Dictionary<string, string> CollidedObject;
     public string armBase;
     public string hand;
@@ -68,6 +64,7 @@ public class GameStateLog
 public class TransformLog
 {
     public int TransformType;
+    public int frame;
     public Vector3 Position;
     public Vector3 Rotation;
     public Vector3 Scale;
@@ -83,6 +80,7 @@ public class ArmLog
 {
     public string armType;
     public int armBase;
+    public int frame;
     public Transform targetTransform;
     public Vector3 targetPosition;
     public Vector3 targetRotation;
@@ -148,10 +146,10 @@ public class LogDataManager : MonoBehaviour
     private bool logsReady;
     private bool loading;
 
-    private void Start()
+    private void Awake()
     {
         saveFile = Application.persistentDataPath + "/Logs/" + saveFile;
-        StartCoroutine(WaitUntilFilesAreReady());
+        //StartCoroutine(WaitUntilFilesAreReady());
         LoadReplay();
     }
 

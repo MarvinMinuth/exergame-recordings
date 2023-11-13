@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dac9f0f400262a5418b0abb7cea25149, type: 3}
+  m_Name: TaskOneLoadingStatue
+  m_EditorClassIdentifier: 
+  statuePrefab: {fileID: 5299107857442854123, guid: e1fc461dd4690b449bc86ae5c03874c3,
+    type: 3}
+  material: {fileID: 2100000, guid: 9926d18699c6112479d0f9403ba810ba, type: 2}
+  transparentMaterial: {fileID: 2100000, guid: a4725c187e0aca048a6570dc386490cd, type: 2}
+  hmdMaterial: {fileID: 2100000, guid: 8a02ca49e47b44d4d9439382421d208f, type: 2}
+  saveFile: 1
+  messageText: "\u201CAn einer Stelle hat mich ein Schwert erwischt. Ich habe mich
+    so erschreckt, dass danach gar nichts mehr so richtig funktioniert hat.\u201D"

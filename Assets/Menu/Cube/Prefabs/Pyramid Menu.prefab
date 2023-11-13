@@ -1025,23 +1025,6 @@ GameObject:
     type: 3}
   m_PrefabInstance: {fileID: 8284702238927426066}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &908226909993456743
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3519019666782941857}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 71f68d712a775404891944c67b64456b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timelinePrefab: {fileID: 5655661324407173003, guid: 257a9ed47948fa9498147295a5bbc06f,
-    type: 3}
-  fighterButtonsPrefab: {fileID: 5655661324407173003, guid: 386ed238241ab1d498bd417ae872e28f,
-    type: 3}
-  menuPanel: {fileID: 6407249184143289321}
 --- !u!114 &6407249185562883083
 MonoBehaviour:
   m_ObjectHideFlags: 0
