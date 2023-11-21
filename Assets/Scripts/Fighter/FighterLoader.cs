@@ -7,6 +7,7 @@ public class FighterLoader : MonoBehaviour
     public static FighterLoader Instance { get; private set; }
 
     public event EventHandler OnFighterInPosition;
+    public event EventHandler OnAllReplaysFinished;
 
     [Header("General")]
     [SerializeField] private Material defaultMaterial;
@@ -32,6 +33,8 @@ public class FighterLoader : MonoBehaviour
     private ReplayController replayController;
     private FighterLoadingStatue loadedFighter;
     private FighterLoadingStatue statueShowingMessage;
+
+    private int finishedCounter = 0;
 
     private bool loadingAllowed = true;
 
@@ -113,6 +116,13 @@ public class FighterLoader : MonoBehaviour
         loadedFighter.Finish();
         loadedFighter = null;
         replayController.Unload();
+
+        finishedCounter++;
+
+        if(finishedCounter == 4)
+        {
+            OnAllReplaysFinished?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     public void ShowMessage(FighterLoadingStatue fighterLoadingStatue)
@@ -140,9 +150,9 @@ public class FighterLoader : MonoBehaviour
 
     public void AllowLoading()
     {
-        if (tutorialLoadingStatue != null) { tutorialLoadingStatue.InteractionsAllowed(true); }
-        if (taskOneLoadingStatue != null) { taskOneLoadingStatue.InteractionsAllowed(true); }
-        if (taskTwoLoadingStatue != null) { taskTwoLoadingStatue.InteractionsAllowed(true); }
-        if (taskThreeLoadingStatue != null) { taskThreeLoadingStatue.InteractionsAllowed(true); }
+        if (tutorialLoadingStatue != null && !tutorialLoadingStatue.IsFinished()) { tutorialLoadingStatue.InteractionsAllowed(true); }
+        if (taskOneLoadingStatue != null && !taskOneLoadingStatue.IsFinished()) { taskOneLoadingStatue.InteractionsAllowed(true); }
+        if (taskTwoLoadingStatue != null && !taskTwoLoadingStatue.IsFinished()) { taskTwoLoadingStatue.InteractionsAllowed(true); }
+        if (taskThreeLoadingStatue != null && !taskThreeLoadingStatue.IsFinished()) { taskThreeLoadingStatue.InteractionsAllowed(true); }
     }
 }

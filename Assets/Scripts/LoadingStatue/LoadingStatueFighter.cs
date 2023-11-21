@@ -8,7 +8,7 @@ public class LoadingStatueFighter : MonoBehaviour
     [SerializeField] private Transform fighterVisuals;
 
     private Vector3 initialHeadPosition, initialLeftHandPosition, initialRightHandPosition;
-    private Quaternion initialHeadRotation, initialLeftHandRotation, initialRightHandRotation;
+    private Vector3 initialHeadRotation, initialLeftHandRotation, initialRightHandRotation;
 
     private void Awake()
     {
@@ -16,9 +16,9 @@ public class LoadingStatueFighter : MonoBehaviour
         initialLeftHandPosition = leftHandTransform.position;
         initialRightHandPosition = rightHandTransform.position;
 
-        initialHeadRotation = headTransform.rotation;
-        initialLeftHandRotation = leftHandTransform.rotation;
-        initialRightHandRotation = rightHandTransform.rotation;
+        initialHeadRotation = headTransform.rotation.eulerAngles;
+        initialLeftHandRotation = leftHandTransform.rotation.eulerAngles;
+        initialRightHandRotation = rightHandTransform.rotation.eulerAngles;
     }
 
     public void MoveHeadToTargetLocation(Vector3 targetPosition, float time)
@@ -40,13 +40,24 @@ public class LoadingStatueFighter : MonoBehaviour
     {
         float timeElapsed = 0;
 
+        Vector3 headTargetRotation = ReplayManager.Instance.GetHeadTransformLogs()[0].Rotation;
+        Vector3 leftHandTargetRotation = ReplayManager.Instance.GetLeftHandTransformLogs()[0].Rotation;
+        Vector3 rightHandTargetRotation = ReplayManager.Instance.GetRightHandTransformLogs()[0].Rotation;
+
+        Vector3 currentHeadPosition = headTransform.position;
+        Vector3 currentLeftHandPosition = leftHandTransform.position;
+        Vector3 currentRightHandPosition = rightHandTransform.position;
+
         while (timeElapsed < time)
         {
-            headTransform.position = Vector3.Lerp(initialHeadPosition, targetHeadPosition, timeElapsed / time);
+            headTransform.position = Vector3.Lerp(currentHeadPosition, targetHeadPosition, timeElapsed / time);
+            headTransform.eulerAngles = Vector3.Slerp(initialHeadRotation, headTargetRotation, timeElapsed / time);
 
-            leftHandTransform.position = Vector3.Lerp(initialLeftHandPosition, targetLeftHandPosition, timeElapsed / time);
+            leftHandTransform.position = Vector3.Lerp(currentLeftHandPosition, targetLeftHandPosition, timeElapsed / time);
+            leftHandTransform.eulerAngles = Vector3.Slerp(initialLeftHandRotation, leftHandTargetRotation, timeElapsed / time);
 
-            rightHandTransform.position = Vector3.Lerp(initialRightHandPosition, targetRightHandPosition, timeElapsed / time);
+            rightHandTransform.position = Vector3.Lerp(currentRightHandPosition, targetRightHandPosition, timeElapsed / time);
+            rightHandTransform.eulerAngles = Vector3.Slerp(initialRightHandRotation, rightHandTargetRotation, timeElapsed / time);
 
             timeElapsed += Time.deltaTime;
 
@@ -54,7 +65,6 @@ public class LoadingStatueFighter : MonoBehaviour
         }
 
         FighterLoader.Instance.InvokeOnFighterInPosition();
-        
     }
 
     public void MoveToStartPosition(float time)
@@ -64,18 +74,17 @@ public class LoadingStatueFighter : MonoBehaviour
         Vector3 headTargetPosition = ReplayManager.Instance.GetHeadTransformLogs()[0].Position;
 
         Vector3 targetPosition = new Vector3(headTargetPosition.x, 0, headTargetPosition.z);
-        Vector3 leftHandTargetPosition = ReplayManager.Instance.GetLeftHandTransformLogs()[0].Position;
-        Vector3 rightHandTargetPosition = ReplayManager.Instance.GetRightHandTransformLogs()[0].Position;
 
-        //StartCoroutine(MoveToTargetPosition(headTargetPosition, leftHandTargetPosition, rightHandTargetPosition, time));
         StartCoroutine(MoveFighterVisualsToTargetPosition(targetPosition, time));
+        
+        
     }
 
     IEnumerator MoveFighterVisualsToTargetPosition(Vector3 targetPosition, float time)
     {
         float timeElapsed = 0;
 
-        while (timeElapsed < time)
+        while (timeElapsed < (time/3)*2)
         {
             fighterVisuals.position = Vector3.Lerp(fighterVisuals.position, targetPosition, timeElapsed / time);
 
@@ -84,22 +93,24 @@ public class LoadingStatueFighter : MonoBehaviour
             yield return null;
         }
 
-        FighterLoader.Instance.InvokeOnFighterInPosition();
+        Vector3 headTargetPosition = ReplayManager.Instance.GetHeadTransformLogs()[0].Position;
+        Vector3 leftHandTargetPosition = ReplayManager.Instance.GetLeftHandTransformLogs()[0].Position;
+        Vector3 rightHandTargetPosition = ReplayManager.Instance.GetRightHandTransformLogs()[0].Position;
+
+        StartCoroutine(MoveToTargetPosition(headTargetPosition, leftHandTargetPosition, rightHandTargetPosition, time/3));
     }
 
     public void ResetPositions()
     {
-        /*
+        fighterVisuals.localPosition = Vector3.zero;
+
         headTransform.position = initialHeadPosition;
-        headTransform.rotation = initialHeadRotation;
+        headTransform.eulerAngles = initialHeadRotation;
 
         leftHandTransform.position = initialLeftHandPosition;
-        leftHandTransform.rotation = initialLeftHandRotation;
+        leftHandTransform.eulerAngles = initialLeftHandRotation;
 
         rightHandTransform.position = initialRightHandPosition;
-        rightHandTransform.rotation = initialRightHandRotation;
-        */
-
-        fighterVisuals.localPosition = Vector3.zero;
+        rightHandTransform.eulerAngles = initialRightHandRotation;    
     }
 }

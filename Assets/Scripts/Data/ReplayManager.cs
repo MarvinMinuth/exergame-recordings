@@ -356,4 +356,9 @@ public class ReplayManager : MonoBehaviour
     public List<TransformLog> GetHeadTransformLogs() { return headTransformLogs; }
     public List<TransformLog> GetLeftHandTransformLogs() { return leftHandTransformLogs; }
     public List<TransformLog> GetRightHandTransformLogs() { return rightHandTransformLogs; }
+
+    public int GetFrame()
+    {
+        return frame;
+    }
 }

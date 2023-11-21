@@ -14,6 +14,8 @@ using UnityEngine;
 
 public class Logger : MonoBehaviour
 {
+    public event EventHandler OnLogging;
+
     public static Logger Instance { get; private set; }
     public enum LogType { UncategorizedLog, TransformLog, LoadFileLog, ReplayControllerLog, FighterLog, HROptionsLog }
     public enum TransformType { Undefined, HMD, LeftController, RightController }
@@ -59,6 +61,16 @@ public class Logger : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        FighterLoader.Instance.OnAllReplaysFinished += FighterLoader_OnAllReplaysFinished;
+    }
+
+    private void FighterLoader_OnAllReplaysFinished(object sender, EventArgs e)
+    {
+        SaveLog();
+    }
+
     private void FixedUpdate()
     {
         frame++;
@@ -66,9 +78,7 @@ public class Logger : MonoBehaviour
 
     private void OnDestroy()
     {
-        ES3.Save(IDKEY, logID, saveSettings);
-
-        ES3.StoreCachedFile(saveSettings);
+        SaveLog();
     }
 
     public void Log(BaseStudyLog log)
@@ -78,9 +88,11 @@ public class Logger : MonoBehaviour
         log.id = logID;
         ES3.Save("Log_" + logID + "_" + log.GetType(), log, saveSettings);
         logID++;
+
+        OnLogging?.Invoke(this, EventArgs.Empty);
     }
 
-    public void LogTransform(TransformStudyLog log)
+    public void LogOnLogging(TransformStudyLog log)
     {
         log.frame = frame;
         log.Date_Time = DateTime.Now.ToString("") + ":" + DateTime.Now.Millisecond;
@@ -96,6 +108,8 @@ public class Logger : MonoBehaviour
         log.id = logID;
         ES3.Save("Log_" + logID + "_" + log.GetType(), log, saveSettings);
         logID++;
+
+        OnLogging?.Invoke(this, EventArgs.Empty);
     }
 
     public void LogReplayControllerSettings(ReplayControllerStudyLog log)
@@ -105,11 +119,20 @@ public class Logger : MonoBehaviour
         log.id = logID;
         ES3.Save("Log_" + logID + "_" + log.GetType(), log, saveSettings);
         logID++;
+
+        OnLogging?.Invoke(this, EventArgs.Empty);
     }
 
     public int GetFrame()
     {
         return frame;
+    }
+
+    public void SaveLog()
+    {
+        ES3.Save(IDKEY, logID, saveSettings);
+
+        ES3.StoreCachedFile(saveSettings);
     }
 }
 

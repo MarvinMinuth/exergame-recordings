@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac9f0f400262a5418b0abb7cea25149, type: 3}
   m_Name: TaskThreeLoadingStatue
   m_EditorClassIdentifier: 
-  statuePrefab: {fileID: 5299107857442854123, guid: e1fc461dd4690b449bc86ae5c03874c3,
+  statuePrefab: {fileID: 1378996183123221608, guid: 7b286371769b1854daca803cee4c0dab,
     type: 3}
   material: {fileID: 2100000, guid: 072f3d0f1ad4f934d8b9c1ffeac0f641, type: 2}
   transparentMaterial: {fileID: 2100000, guid: a4725c187e0aca048a6570dc386490cd, type: 2}

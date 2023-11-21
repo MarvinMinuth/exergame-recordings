@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac9f0f400262a5418b0abb7cea25149, type: 3}
   m_Name: TutorialLoadingStatue
   m_EditorClassIdentifier: 
-  statuePrefab: {fileID: 5299107857442854123, guid: e1fc461dd4690b449bc86ae5c03874c3,
+  statuePrefab: {fileID: 1738763319488337310, guid: e7db17ec4f2bae84a8276814ad41d028,
     type: 3}
   material: {fileID: 2100000, guid: a719f17fb97000f4bbc84242b06e862b, type: 2}
   transparentMaterial: {fileID: 2100000, guid: a4725c187e0aca048a6570dc386490cd, type: 2}
