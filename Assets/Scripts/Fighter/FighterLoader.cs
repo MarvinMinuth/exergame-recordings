@@ -7,6 +7,7 @@ public class FighterLoader : MonoBehaviour
     public static FighterLoader Instance { get; private set; }
 
     public event EventHandler OnFighterInPosition;
+    public event EventHandler OnReplayFinished;
     public event EventHandler OnAllReplaysFinished;
 
     [Header("General")]
@@ -114,6 +115,9 @@ public class FighterLoader : MonoBehaviour
     {
         if(loadedFighter == null) return;
         loadedFighter.Finish();
+
+        OnReplayFinished?.Invoke(this, EventArgs.Empty);
+
         loadedFighter = null;
         replayController.Unload();
 

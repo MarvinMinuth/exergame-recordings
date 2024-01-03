@@ -81,6 +81,7 @@ public class Trajectories : Timeline
 
     private void FighterCoordinator_OnBodyPartShown(object sender, System.EventArgs e)
     {
+        if (minFrame == 0 && maxFrame == 0) return;
         grabInteractable.enabled = true;
         lineRenderer.enabled = true;
     }
@@ -149,9 +150,12 @@ public class Trajectories : Timeline
     }
 
     public void DestroyTrajectories()
-    {
+    {   
+        //transformLogs.Clear();
         grabInteractable.enabled = false;
         lineRenderer.positionCount = 0;
+        minFrame = 0;
+        maxFrame = 0;
     }
 
     public override void StartDrag()

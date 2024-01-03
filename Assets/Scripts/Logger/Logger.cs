@@ -17,7 +17,7 @@ public class Logger : MonoBehaviour
     public event EventHandler OnLogging;
 
     public static Logger Instance { get; private set; }
-    public enum LogType { UncategorizedLog, TransformLog, LoadFileLog, ReplayControllerLog, FighterLog, HROptionsLog }
+    public enum LogType { UncategorizedLog, TransformLog, LoadFileLog, ReplayControllerLog, FighterLog, HROptionsLog, FinishReplayLog }
     public enum TransformType { Undefined, HMD, LeftController, RightController }
 
     private static int frame = 0;
@@ -216,6 +216,16 @@ public class HeartrateOptionsStudyLog : BaseStudyLog
     public HeartrateOptionsStudyLog()
     {
         logType = Logger.LogType.HROptionsLog;
+    }
+}
+
+public class FinishReplayStudyLog : BaseStudyLog
+{
+    public Savefile savefile;
+    public int replayFrame;
+    public FinishReplayStudyLog()
+    {
+        logType = Logger.LogType.FinishReplayLog;
     }
 }
 

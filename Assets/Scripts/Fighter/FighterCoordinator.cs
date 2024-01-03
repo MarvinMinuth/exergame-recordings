@@ -58,6 +58,10 @@ public class FighterCoordinator : MonoBehaviour
 
     private void FighterLoader_OnFighterInPosition(object sender, EventArgs e)
     {
+        ShowHead();
+        ShowLeftHand();
+        ShowRightHand();
+        ShowBody();
         fighterVisuals.Show();
         fighterVisuals.ChangeMaterial(loadingStatueSO.material, false);
     }
@@ -156,6 +160,7 @@ public class FighterCoordinator : MonoBehaviour
 
     private void ReplayManager_OnReplayLoaded(object sender, ReplayManager.OnReplayLoadedEventArgs e)
     {
+        
         loadingStatueSO = e.loadingStatueSO;
     }
 
